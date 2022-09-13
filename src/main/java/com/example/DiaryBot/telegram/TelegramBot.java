@@ -1,6 +1,7 @@
 package com.example.DiaryBot.telegram;
 
 import com.example.DiaryBot.config.BotConfig;
+import com.example.DiaryBot.telegram.service.BotService;
 import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,12 @@ import org.telegram.telegrambots.starter.SpringWebhookBot;
 @Component
 @Setter
 public class TelegramBot extends SpringWebhookBot {
-    String botPath;
-    String botUsername;
-    String botToken;
+    private String botPath;
+    private String botUsername;
+    private String botToken;
+
+    @Autowired
+    private BotService botService;
 
     public TelegramBot(SetWebhook setWebhook) {
         super(setWebhook);
@@ -26,21 +30,29 @@ public class TelegramBot extends SpringWebhookBot {
 
     @Override
     public String getBotUsername() {
-        return null;
+        return botUsername;
     }
 
     @Override
     public String getBotToken() {
-        return null;
+        return botToken;
     }
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return new SendMessage(String.valueOf(update.getMessage().getChatId()), "hello!");
+        return botService.handleUpdate(update);
     }
 
     @Override
     public String getBotPath() {
-        return null;
+        return botPath;
+    }
+
+    public void sendMessage(Long chatId, String text) {
+        try {
+            execute(new SendMessage(String.valueOf(chatId), text));
+        } catch (Throwable cause) {
+            cause.printStackTrace();
+        }
     }
 }

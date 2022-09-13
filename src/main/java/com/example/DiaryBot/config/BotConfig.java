@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-//@PropertySource("application.yaml")
+@PropertySource("application.yaml")
 @Getter
 public class BotConfig {
     @Value("${telegram.webhook-path}")
