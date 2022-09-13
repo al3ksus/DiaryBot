@@ -32,8 +32,7 @@ public class CommandHandler {
     }
 
     private BotApiMethod<?> handleAddReminder(Long chatId) {
-        Chat chat = chatService.getChat(chatId);
-        chat.setBotState(BotState.SET_TEXT_REMINDER);
+        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
 
         return new SendMessage(String.valueOf(chatId), messageGenerator.newReminderMessage());
     }
