@@ -12,33 +12,21 @@ import java.util.GregorianCalendar;
 @Component
 public class TimeParser {
 
-    public Calendar parseFromString(String timeString) {
+    public long parseFromString(String timeString) {
 
-        int hour = Integer.parseInt(timeString.substring(0, 2));
-        int minute = Integer.parseInt(timeString.substring(3, 5));
-        int day = Integer.parseInt(timeString.substring(6, 8));
-        int month = Integer.parseInt(timeString.substring(9,11));
-        int year = Integer.parseInt(timeString.substring(12));
-
-        Calendar calendar = new GregorianCalendar();
-
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month - 1);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        //System.out.println(calendar.getTime());
-
-        Date date = new Date();
+        Date date;
+        Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd-MM-yyyy");
+        Date currentDate = calendar.getTime();
+        long delay;
 
         try {
             date = formatter.parse(timeString);
-            System.out.println(date);
+            delay = date.getTime() - currentDate.getTime();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
-        return calendar;
+        return delay;
     }
 }

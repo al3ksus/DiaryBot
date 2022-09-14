@@ -10,8 +10,12 @@ import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 @Configuration
 public class SpringConfig {
 
-    @Autowired
-    private BotConfig botConfig;
+    private final BotConfig botConfig;
+
+    public SpringConfig(BotConfig botConfig) {
+        this.botConfig = botConfig;
+    }
+
     @Bean
     public SetWebhook setWebhookInstance() {
         return SetWebhook.builder().url(botConfig.getWebhookPath()).build();

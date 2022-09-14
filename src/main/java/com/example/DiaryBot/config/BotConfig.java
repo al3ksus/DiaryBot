@@ -6,15 +6,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("application.yaml")
+//@PropertySource("main\\resources\\application.yaml")
 @Getter
 public class BotConfig {
-    @Value("${telegram.webhook-path}")
-    private String webhookPath;
+    //@Value("${telegram.webhook-path}")
+    private final String webhookPath = "https://616c-85-113-138-225.eu.ngrok.io";
 
-    @Value("${telegram.bot-name}")
-    private String botName;
+    //@Value("${telegram.bot-name}")
+    private final String botName = "Dailu_Helper_Bot";
 
-    @Value("${telegram.bot-token}")
-    private String botToken;
+    //@Value("${telegram.bot-token}")
+    private final String botToken = "5620340450:AAEStJhaE1cd9x8VJjtyWIcAfcje1LsWjVg";
 }

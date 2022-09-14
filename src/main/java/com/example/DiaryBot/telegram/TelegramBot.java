@@ -39,13 +39,14 @@ public class TelegramBot extends SpringWebhookBot {
     }
 
     @Override
-    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        return botService.handleUpdate(update);
+    public String getBotPath() {
+        return botPath;
     }
 
     @Override
-    public String getBotPath() {
-        return botPath;
+    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
+        System.out.println();
+        return botService.handleUpdate(update);
     }
 
     public void sendMessage(Long chatId, String text) {
