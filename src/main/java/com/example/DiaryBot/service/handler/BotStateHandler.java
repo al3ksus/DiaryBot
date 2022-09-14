@@ -4,6 +4,7 @@ import com.example.DiaryBot.model.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
+import com.example.DiaryBot.service.time.TimeParser;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,14 +14,20 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 @Component
 public class BotStateHandler {
 
-    @Autowired
-    private ReminderService reminderService;
+    private final ReminderService reminderService;
 
-    @Autowired
-    private ChatService chatService;
+    private final ChatService chatService;
 
-    @Autowired
-    private MessageGenerator messageGenerator;
+    private final MessageGenerator messageGenerator;
+
+    private final TimeParser timeParser;
+
+    public BotStateHandler(ReminderService reminderService, ChatService chatService, MessageGenerator messageGenerator, TimeParser timeParser) {
+        this.reminderService = reminderService;
+        this.chatService = chatService;
+        this.messageGenerator = messageGenerator;
+        this.timeParser = timeParser;
+    }
 
     public BotApiMethod<?> handleBotState(Long chatId, String messageText, BotState botState) {
 
@@ -35,6 +42,7 @@ public class BotStateHandler {
             case SET_TIME_REMINDER -> {
                 chatService.setBotState(chatId, BotState.DEFAULT);
                 reminderService.setTime(messageText);
+                timeParser.parseFromString(messageText);
                 return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
             }
 

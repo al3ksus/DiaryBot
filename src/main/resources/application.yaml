@@ -2,7 +2,7 @@ telegram:
   bot-name: Dailu_Helper_Bot
   bot-token: 5620340450:AAEStJhaE1cd9x8VJjtyWIcAfcje1LsWjVg
   api-url: https://api.telegram.org
-  webhook-path: https://23d0-77-238-146-253.eu.ngrok.io
+  webhook-path: https://b033-62-76-212-71.eu.ngrok.io
 
 server:
     port: 8080
