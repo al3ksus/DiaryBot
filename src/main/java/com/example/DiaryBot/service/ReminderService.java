@@ -3,7 +3,6 @@ package com.example.DiaryBot.service;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.repository.ReminderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

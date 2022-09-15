@@ -6,29 +6,34 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Timer;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Reminder {
+public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
-    @OneToOne
-    private Chat chat;
+    private String dayOfWeek;
 
     private String text;
 
-    private String time;
+    @OneToOne
+    private Chat chat;
 
-    public Reminder(Chat chat, String text) {
+    public Schedule(String dayOfWeek, Chat chat) {
+        this.dayOfWeek = dayOfWeek;
         this.chat = chat;
+    }
+
+    public Schedule(String dayOfWeek, String text, Chat chat) {
+        this.dayOfWeek = dayOfWeek;
         this.text = text;
+        this.chat = chat;
     }
 }

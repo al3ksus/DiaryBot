@@ -25,14 +25,11 @@ public class CommandHandler {
 
     private final KeyBoardService keyBoardService;
 
-    private final BotStateHandler botStateHandler;
-
     public CommandHandler(MessageGenerator messageGenerator, ChatService chatService, ReminderService reminderService, KeyBoardService keyBoardService, BotStateHandler botStateHandler) {
         this.messageGenerator = messageGenerator;
         this.chatService = chatService;
         this.reminderService = reminderService;
         this.keyBoardService = keyBoardService;
-        this.botStateHandler = botStateHandler;
     }
 
     public BotApiMethod<?> handleCommand(Long chatId, String command) {
@@ -40,6 +37,7 @@ public class CommandHandler {
         return switch (command) {
             case "START" -> handleStart(chatId);
             case "ADDREMINDER" -> handleAddReminder(chatId);
+            case "ADDSCHEDULE" -> handleAddSchedule(chatId);
             default -> null;
         };
 
@@ -64,5 +62,11 @@ public class CommandHandler {
 
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
         return new SendMessage(String.valueOf(chatId), messageGenerator.newReminderMessage());
+    }
+
+    public BotApiMethod<?> handleAddSchedule(Long chatId) {
+        SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
+        sendMessage.setReplyMarkup(keyBoardService.getWeekButtonRow());
+        return sendMessage;
     }
 }

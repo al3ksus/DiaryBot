@@ -28,4 +28,16 @@ public class MessageGenerator {
                 + text
                 + "\", \nкоторому вы не указали время";
     }
+
+    public String newScheduleMessage() {
+        return "Выбери день недели, на который хочешь составить расписание";
+    }
+
+    public String setTextScheduleMessage(String dayOfWeek) {
+        return "Напиши свое расписание на " + dayOfWeek;
+    }
+
+    public String scheduleSavedMessage(String dayOfWeek) {
+        return "Расписание на " + dayOfWeek + " сохранено";
+    }
 }

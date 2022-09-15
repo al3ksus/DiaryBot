@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
-    public Optional<Reminder> findByTime(String time);
+    Optional<Reminder> findByTime(String time);
 }

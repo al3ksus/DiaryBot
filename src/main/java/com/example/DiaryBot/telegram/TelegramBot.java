@@ -1,15 +1,10 @@
 package com.example.DiaryBot.telegram;
 
-import com.example.DiaryBot.config.BotConfig;
 import com.example.DiaryBot.telegram.service.BotService;
-import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.starter.SpringWebhookBot;
@@ -47,13 +42,5 @@ public class TelegramBot extends SpringWebhookBot {
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         System.out.println();
         return botService.handleUpdate(update);
-    }
-
-    public void sendMessage(Long chatId, String text) {
-        try {
-            execute(new SendMessage(String.valueOf(chatId), text));
-        } catch (Throwable cause) {
-            cause.printStackTrace();
-        }
     }
 }

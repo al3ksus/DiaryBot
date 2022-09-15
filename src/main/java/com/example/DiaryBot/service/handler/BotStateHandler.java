@@ -3,12 +3,14 @@ package com.example.DiaryBot.service.handler;
 import com.example.DiaryBot.model.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Reminder;
-import com.example.DiaryBot.model.Task;
+import com.example.DiaryBot.model.Schedule;
+import com.example.DiaryBot.service.ScheduleService;
+import com.example.DiaryBot.task.TaskReminder;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.time.TimeParser;
+import com.example.DiaryBot.task.TaskSchedule;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -23,13 +25,16 @@ public class BotStateHandler {
 
     private final ChatService chatService;
 
+    private final ScheduleService scheduleService;
+
     private final MessageGenerator messageGenerator;
 
     private final TimeParser timeParser;
 
-    public BotStateHandler(ReminderService reminderService, ChatService chatService, MessageGenerator messageGenerator, TimeParser timeParser) {
+    public BotStateHandler(ReminderService reminderService, ChatService chatService, ScheduleService scheduleService, MessageGenerator messageGenerator, TimeParser timeParser) {
         this.reminderService = reminderService;
         this.chatService = chatService;
+        this.scheduleService = scheduleService;
         this.messageGenerator = messageGenerator;
         this.timeParser = timeParser;
     }
@@ -43,6 +48,10 @@ public class BotStateHandler {
 
             case SET_TIME_REMINDER -> {
                 return handleSetTimeReminder(chatId, messageText);
+            }
+
+            case ADD_SCHEDULE -> {
+                return handleAddSchedule(chatId, messageText);
             }
         }
 
@@ -63,10 +72,25 @@ public class BotStateHandler {
 
         if (reminder.isPresent()) {
             Timer timer = new Timer();
-            Task task = new Task(reminder.get().getText(), chatId);
+            TaskReminder task = new TaskReminder(reminder.get(), chatId, timer, reminderService);
             reminderService.setTime(reminder.get(), messageText);
-            timer.schedule(task, timeParser.parseFromString(messageText));
+            task.getTimer().schedule(task, timeParser.parseFromString(messageText));
             return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
+        }
+
+        return null;
+    }
+
+    private BotApiMethod<?> handleAddSchedule(Long chatId, String messageText) {
+        chatService.setBotState(chatId, BotState.DEFAULT);
+        Optional<Schedule> schedule = scheduleService.findWithoutText();
+
+        if (schedule.isPresent()) {
+            Timer timer = new Timer();
+            TaskSchedule task = new TaskSchedule(messageText, chatId, timer);
+            scheduleService.setText(schedule.get(), messageText);
+            timer.schedule(task, 1000);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.scheduleSavedMessage(schedule.get().getDayOfWeek()));
         }
 
         return null;
