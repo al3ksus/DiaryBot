@@ -25,15 +25,13 @@ public class ReminderService {
         return reminderRepository.findByTime(null);
     }
 
-    public Reminder setTime(String time) {
-        Optional<Reminder> reminder = findWithoutTime();
-
-        if (reminder.isPresent()) {
-            reminder.get().setTime(time);
-            reminderRepository.save(reminder.get());
-            return reminder.get();
-        }
-
-        return null;
+    public void setTime(Reminder reminder, String time) {
+            reminder.setTime(time);
+            reminderRepository.save(reminder);
     }
+
+    public void delete(Reminder reminder) {
+        reminderRepository.delete(reminder);
+    }
+
 }

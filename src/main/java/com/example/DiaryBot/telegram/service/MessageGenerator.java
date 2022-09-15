@@ -22,4 +22,10 @@ public class MessageGenerator {
     public String reminderSavedMessage() {
         return "Напоминание сохранено";
     }
+
+    public String unfinishedReminderMessage(String text) {
+        return "Уже есть напоминание\n \""
+                + text
+                + "\", \nкоторому вы не указали время";
+    }
 }

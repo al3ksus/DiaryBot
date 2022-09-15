@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.util.Optional;
 import java.util.Timer;
 
 @Component
@@ -37,25 +38,37 @@ public class BotStateHandler {
 
         switch (botState) {
             case SET_TEXT_REMINDER -> {
-                Chat chat = chatService.getChat(chatId);
-                chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
-                reminderService.addReminder(chat, messageText);
-                return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
+                return handleSetTextReminder(chatId, messageText);
             }
 
             case SET_TIME_REMINDER -> {
-                chatService.setBotState(chatId, BotState.DEFAULT);
-                Reminder reminder = reminderService.setTime(messageText);
-
-                Timer timer = new Timer();
-                Task task = new Task(reminder.getText(), chatId);
-                timer.schedule(task, timeParser.parseFromString(messageText));
-                return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
-            }
-
-            default -> {
-                return null;
+                return handleSetTimeReminder(chatId, messageText);
             }
         }
+
+        return null;
+    }
+
+    private BotApiMethod<?> handleSetTextReminder(Long chatId, String messageText) {
+
+        Chat chat = chatService.getChat(chatId);
+        chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
+        reminderService.addReminder(chat, messageText);
+        return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
+    }
+
+    private BotApiMethod<?> handleSetTimeReminder(Long chatId, String messageText) {
+        chatService.setBotState(chatId, BotState.DEFAULT);
+        Optional<Reminder> reminder = reminderService.findWithoutTime();
+
+        if (reminder.isPresent()) {
+            Timer timer = new Timer();
+            Task task = new Task(reminder.get().getText(), chatId);
+            reminderService.setTime(reminder.get(), messageText);
+            timer.schedule(task, timeParser.parseFromString(messageText));
+            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
+        }
+
+        return null;
     }
 }

@@ -16,7 +16,7 @@ public class TimeParser {
 
         Date date;
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd-MM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
         Date currentDate = calendar.getTime();
         long delay;
 
