@@ -1,5 +1,6 @@
 package com.example.DiaryBot.telegram.service;
 
+import com.example.DiaryBot.model.enums.DayOfWeek;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,11 +34,11 @@ public class MessageGenerator {
         return "Выбери день недели, на который хочешь составить расписание";
     }
 
-    public String setTextScheduleMessage(String dayOfWeek) {
-        return "Напиши свое расписание на " + dayOfWeek;
+    public String setTextScheduleMessage(DayOfWeek dayOfWeek) {
+        return "Напиши свое расписание на " + dayOfWeek.getTitle();
     }
 
-    public String scheduleSavedMessage(String dayOfWeek) {
-        return "Расписание на " + dayOfWeek + " сохранено";
+    public String scheduleSavedMessage(DayOfWeek dayOfWeek) {
+        return "Расписание на " + dayOfWeek.getTitle() + " сохранено";
     }
 }

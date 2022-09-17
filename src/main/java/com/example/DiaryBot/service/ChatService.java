@@ -1,9 +1,8 @@
 package com.example.DiaryBot.service;
 
-import com.example.DiaryBot.model.BotState;
+import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.repository.ChatRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

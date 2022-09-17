@@ -2,6 +2,7 @@ package com.example.DiaryBot.service;
 
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Schedule;
+import com.example.DiaryBot.model.enums.DayOfWeek;
 import com.example.DiaryBot.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public void addSchedule(String dayOfWeek, Chat chat) {
+    public void addSchedule(DayOfWeek dayOfWeek, Chat chat) {
         scheduleRepository.save(new Schedule(dayOfWeek, chat));
     }
 

@@ -1,4 +1,4 @@
-package com.example.DiaryBot.model;
+package com.example.DiaryBot.model.enums;
 
 
 public enum BotState {

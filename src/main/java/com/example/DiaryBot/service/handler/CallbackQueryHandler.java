@@ -1,7 +1,8 @@
 package com.example.DiaryBot.service.handler;
 
-import com.example.DiaryBot.model.BotState;
+import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
+import com.example.DiaryBot.model.enums.DayOfWeek;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.ScheduleService;
@@ -38,13 +39,13 @@ public class CallbackQueryHandler {
         return switch (data) {
             case "ADDREMINDER" -> handleAddReminder(chatId, data);
             case "SETTIME" -> handleSetTime(chatId);
-            case "MONDAY" -> addSchedule(chatId, "Понедельник");
-            case "TUESDAY" -> addSchedule(chatId, "Вторник");
-            case "WEDNESDAY" -> addSchedule(chatId, "Среда");
-            case "THURSDAY" -> addSchedule(chatId, "Четверг");
-            case "FRIDAY" -> addSchedule(chatId, "Пятница");
-            case "SATURDAY" -> addSchedule(chatId, "Суббота");
-            case "SUNDAY" -> addSchedule(chatId, "Воскресенье");
+            case "MONDAY" -> addSchedule(chatId, DayOfWeek.MONDAY);
+            case "TUESDAY" -> addSchedule(chatId, DayOfWeek.TUESDAY);
+            case "WEDNESDAY" -> addSchedule(chatId, DayOfWeek.WEDNESDAY);
+            case "THURSDAY" -> addSchedule(chatId, DayOfWeek.THURSDAY);
+            case "FRIDAY" -> addSchedule(chatId, DayOfWeek.FRIDAY);
+            case "SATURDAY" -> addSchedule(chatId, DayOfWeek.SATURDAY);
+            case "SUNDAY" -> addSchedule(chatId, DayOfWeek.SUNDAY);
             default -> null;
         };
 
@@ -61,7 +62,7 @@ public class CallbackQueryHandler {
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
     }
 
-    private BotApiMethod<?> addSchedule(Long chatId, String dayOfWeek) {
+    private BotApiMethod<?> addSchedule(Long chatId, DayOfWeek dayOfWeek) {
         scheduleService.addSchedule(dayOfWeek, chatService.getChat(chatId));
         chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextScheduleMessage(dayOfWeek));

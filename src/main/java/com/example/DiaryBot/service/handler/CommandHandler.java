@@ -1,7 +1,6 @@
 package com.example.DiaryBot.service.handler;
 
-import com.example.DiaryBot.model.BotState;
-import com.example.DiaryBot.model.Chat;
+import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.KeyBoardService;

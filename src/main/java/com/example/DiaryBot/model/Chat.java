@@ -1,5 +1,6 @@
 package com.example.DiaryBot.model;
 
+import com.example.DiaryBot.model.enums.BotState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

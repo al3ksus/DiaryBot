@@ -1,5 +1,6 @@
 package com.example.DiaryBot.model;
 
+import com.example.DiaryBot.model.enums.DayOfWeek;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,19 +20,20 @@ public class Schedule {
     @Column(nullable = false)
     private Long id;
 
-    private String dayOfWeek;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
 
     private String text;
 
     @OneToOne
     private Chat chat;
 
-    public Schedule(String dayOfWeek, Chat chat) {
+    public Schedule(DayOfWeek dayOfWeek, Chat chat) {
         this.dayOfWeek = dayOfWeek;
         this.chat = chat;
     }
 
-    public Schedule(String dayOfWeek, String text, Chat chat) {
+    public Schedule(DayOfWeek dayOfWeek, String text, Chat chat) {
         this.dayOfWeek = dayOfWeek;
         this.text = text;
         this.chat = chat;

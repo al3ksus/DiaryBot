@@ -1,6 +1,6 @@
 package com.example.DiaryBot.service.handler;
 
-import com.example.DiaryBot.model.BotState;
+import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.Schedule;
@@ -74,7 +74,7 @@ public class BotStateHandler {
             Timer timer = new Timer();
             TaskReminder task = new TaskReminder(reminder.get(), chatId, timer, reminderService);
             reminderService.setTime(reminder.get(), messageText);
-            task.getTimer().schedule(task, timeParser.parseFromString(messageText));
+            task.getTimer().schedule(task, timeParser.getDelay(messageText));
             return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
         }
 
@@ -89,7 +89,7 @@ public class BotStateHandler {
             Timer timer = new Timer();
             TaskSchedule task = new TaskSchedule(messageText, chatId, timer);
             scheduleService.setText(schedule.get(), messageText);
-            timer.schedule(task, 1000);
+            timer.schedule(task, timeParser.getDelayForSchedule(schedule.get().getDayOfWeek()), 604_800_000);
             return new SendMessage(String.valueOf(chatId), messageGenerator.scheduleSavedMessage(schedule.get().getDayOfWeek()));
         }
 
