@@ -31,4 +31,8 @@ public class Reminder {
         this.chat = chat;
         this.text = text;
     }
+
+    public String toString() {
+        return text + ' ' + (time == null? "": time);
+    }
 }

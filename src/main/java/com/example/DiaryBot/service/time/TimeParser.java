@@ -11,18 +11,14 @@ import java.util.Date;
 @Component
 public class TimeParser {
 
-    public long getDelay(String timeString) {
+    public long getDelay(String timeString) throws ParseException {
         long delay;
         Date date;
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
 
-        try {
-            date = formatter.parse(timeString);
-            delay = date.getTime() - calendar.getTimeInMillis();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        date = formatter.parse(timeString);
+        delay = date.getTime() - calendar.getTimeInMillis();
 
         return delay;
     }

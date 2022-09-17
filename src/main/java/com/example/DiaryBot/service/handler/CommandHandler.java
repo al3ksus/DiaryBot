@@ -34,20 +34,22 @@ public class CommandHandler {
     public BotApiMethod<?> handleCommand(Long chatId, String command) {
 
         return switch (command) {
-            case "START" -> handleStart(chatId);
-            case "ADDREMINDER" -> handleAddReminder(chatId);
-            case "ADDSCHEDULE" -> handleAddSchedule(chatId);
+            case "START" -> start(chatId);
+            case "ADDREMINDER" -> addReminder(chatId);
+            case "DELETEREMINDER" -> deleteReminder(chatId);
+            case "ADDSCHEDULE" -> addSchedule(chatId);
             default -> null;
         };
 
     }
 
-    private BotApiMethod<?> handleStart(Long chatId) {
+    private BotApiMethod<?> start(Long chatId) {
         return new SendMessage(String.valueOf(chatId), messageGenerator.startMessage());
     }
 
-    private BotApiMethod<?> handleAddReminder(Long chatId) {
+    private BotApiMethod<?> addReminder(Long chatId) {
         Optional<Reminder> reminder = reminderService.findWithoutTime();
+        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
 
         if (reminder.isPresent()) {
             SendMessage sendMessage = new SendMessage(
@@ -59,13 +61,18 @@ public class CommandHandler {
             return sendMessage;
         }
 
-        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
         return new SendMessage(String.valueOf(chatId), messageGenerator.newReminderMessage());
     }
 
-    public BotApiMethod<?> handleAddSchedule(Long chatId) {
+    private BotApiMethod<?> deleteReminder(Long chatId) {
+        chatService.setBotState(chatId, BotState.DELETE_REMINDER);
+        return  new SendMessage(String.valueOf(chatId), messageGenerator.deleteReminderMessage(chatId));
+    }
+
+    private BotApiMethod<?> addSchedule(Long chatId) {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
         sendMessage.setReplyMarkup(keyBoardService.getWeekButtonRow());
+        chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
         return sendMessage;
     }
 }

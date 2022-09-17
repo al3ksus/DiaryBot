@@ -5,6 +5,7 @@ import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.repository.ReminderRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,10 @@ public class ReminderService {
 
     public void delete(Reminder reminder) {
         reminderRepository.delete(reminder);
+    }
+
+    public List<Reminder> findAll(Chat chat) {
+        return reminderRepository.findAllByChat(chat);
     }
 
 }

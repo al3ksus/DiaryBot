@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 
@@ -41,24 +43,20 @@ public class BotStateHandler {
 
     public BotApiMethod<?> handleBotState(Long chatId, String messageText, BotState botState) {
 
-        switch (botState) {
-            case SET_TEXT_REMINDER -> {
-                return handleSetTextReminder(chatId, messageText);
-            }
+        return switch (botState) {
+            case SET_TEXT_REMINDER -> setTextReminder(chatId, messageText);
 
-            case SET_TIME_REMINDER -> {
-                return handleSetTimeReminder(chatId, messageText);
-            }
+            case SET_TIME_REMINDER ->  setTimeReminder(chatId, messageText);
 
-            case ADD_SCHEDULE -> {
-                return handleAddSchedule(chatId, messageText);
-            }
-        }
+            case ADD_SCHEDULE -> addSchedule(chatId, messageText);
 
-        return null;
+            case DELETE_REMINDER -> deleteReminder(chatId, messageText);
+
+            default -> null;
+        };
     }
 
-    private BotApiMethod<?> handleSetTextReminder(Long chatId, String messageText) {
+    private BotApiMethod<?> setTextReminder(Long chatId, String messageText) {
 
         Chat chat = chatService.getChat(chatId);
         chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
@@ -66,33 +64,63 @@ public class BotStateHandler {
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
     }
 
-    private BotApiMethod<?> handleSetTimeReminder(Long chatId, String messageText) {
-        chatService.setBotState(chatId, BotState.DEFAULT);
+    private BotApiMethod<?> setTimeReminder(Long chatId, String timeString) {
         Optional<Reminder> reminder = reminderService.findWithoutTime();
 
         if (reminder.isPresent()) {
             Timer timer = new Timer();
             TaskReminder task = new TaskReminder(reminder.get(), chatId, timer, reminderService);
-            reminderService.setTime(reminder.get(), messageText);
-            task.getTimer().schedule(task, timeParser.getDelay(messageText));
+
+            try {
+                task.getTimer().schedule(task, timeParser.getDelay(timeString));
+            }
+            catch (ParseException e) {
+                return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
+            }
+            catch (IllegalArgumentException e) {
+                return new SendMessage(String.valueOf(chatId), messageGenerator.pastTimeError());
+            }
+
+            chatService.setBotState(chatId, BotState.DEFAULT);
+            reminderService.setTime(reminder.get(), timeString);
             return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
         }
 
         return null;
     }
 
-    private BotApiMethod<?> handleAddSchedule(Long chatId, String messageText) {
-        chatService.setBotState(chatId, BotState.DEFAULT);
+    private BotApiMethod<?> addSchedule(Long chatId, String month) {
         Optional<Schedule> schedule = scheduleService.findWithoutText();
 
         if (schedule.isPresent()) {
             Timer timer = new Timer();
-            TaskSchedule task = new TaskSchedule(messageText, chatId, timer);
-            scheduleService.setText(schedule.get(), messageText);
+            TaskSchedule task = new TaskSchedule(month, chatId, timer);
+            scheduleService.setText(schedule.get(), month);
             timer.schedule(task, timeParser.getDelayForSchedule(schedule.get().getDayOfWeek()), 604_800_000);
-            return new SendMessage(String.valueOf(chatId), messageGenerator.scheduleSavedMessage(schedule.get().getDayOfWeek()));
+            chatService.setBotState(chatId, BotState.DEFAULT);
+
+            return new SendMessage(
+                    String.valueOf(chatId),
+                    messageGenerator.scheduleSavedMessage(schedule.get().getDayOfWeek())
+            );
         }
 
         return null;
+    }
+
+    private BotApiMethod<?> deleteReminder(Long chatId, String number) {
+        try {
+            List<Reminder> reminderList = reminderService.findAll(chatService.getChat(chatId));
+            reminderService.delete(reminderList.get(Integer.parseInt(number) - 1));
+            chatService.setBotState(chatId, BotState.DEFAULT);
+
+            return new SendMessage(
+                    String.valueOf(chatId),
+                    messageGenerator.reminderDeletedMessage(reminderList.get(Integer.parseInt(number) - 1))
+            );
+        }
+        catch (NumberFormatException | IndexOutOfBoundsException e) {
+            return new SendMessage(String.valueOf(chatId), messageGenerator.invalidNumberError());
+        }
     }
 }

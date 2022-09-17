@@ -1,10 +1,21 @@
 package com.example.DiaryBot.telegram.service;
 
+import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
+import com.example.DiaryBot.service.ChatService;
+import com.example.DiaryBot.service.ReminderService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@AllArgsConstructor
 public class MessageGenerator {
+
+    private final ReminderService reminderService;
+
+    private final ChatService chatService;
 
     public String startMessage() {
         return "Привет!";
@@ -40,5 +51,43 @@ public class MessageGenerator {
 
     public String scheduleSavedMessage(DayOfWeek dayOfWeek) {
         return "Расписание на " + dayOfWeek.getTitle() + " сохранено";
+    }
+
+    public String deleteReminderMessage(Long chatId) {
+        int number = 1;
+        List<Reminder> reminderList = reminderService.findAll(chatService.getChat(chatId));
+
+        if(reminderList.isEmpty()) {
+            return "Еще нет ни одного напоминания для тебя\n"
+                    + "Чтобы добавить, используй /addreminder";
+        }
+
+        StringBuilder message = new StringBuilder("Введи номер напоминания, которого хочешь удалить\n\n");
+
+        for (Reminder reminder : reminderList) {
+            message.append(number)
+                    .append(" ")
+                    .append(reminder.toString())
+                    .append("\n");
+            number++;
+        }
+
+        return String.valueOf(message);
+    }
+
+    public String reminderDeletedMessage(Reminder reminder) {
+        return "Напоминание\n" + reminder.toString() + "\nудалено";
+    }
+
+    public String invalidNumberError() {
+        return "Неверный номер, поробуй еще раз";
+    }
+
+    public String invalidTimeError() {
+        return "Неверный формат времени, попробуй еще раз";
+    }
+
+    public String pastTimeError() {
+        return "Нельзя назначить напоминание на время, которое уже прошло, попробуй еще раз";
     }
 }

@@ -42,7 +42,7 @@ public class TaskReminder extends TimerTask {
         try {
             connection = (HttpURLConnection) new URL(
                     String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
-                            botConfig.getBotToken(), chatId, reminder.getText())).openConnection();
+                            botConfig.getBotToken(), chatId, reminder.getText().replaceAll("\n", "%0a"))).openConnection();
 
             connection.setRequestMethod("GET");
             connection.connect();

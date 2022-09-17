@@ -37,8 +37,8 @@ public class CallbackQueryHandler {
     public BotApiMethod<?> handleCallBackQuery(Long chatId, String data) {
 
         return switch (data) {
-            case "ADDREMINDER" -> handleAddReminder(chatId, data);
-            case "SETTIME" -> handleSetTime(chatId);
+            case "ADDREMINDER" -> addReminder(chatId, data);
+            case "SETTIME" -> setTimeReminder(chatId);
             case "MONDAY" -> addSchedule(chatId, DayOfWeek.MONDAY);
             case "TUESDAY" -> addSchedule(chatId, DayOfWeek.TUESDAY);
             case "WEDNESDAY" -> addSchedule(chatId, DayOfWeek.WEDNESDAY);
@@ -51,20 +51,24 @@ public class CallbackQueryHandler {
 
     }
 
-    private BotApiMethod<?> handleAddReminder(Long chatId, String data) {
+    private BotApiMethod<?> addReminder(Long chatId, String data) {
         Optional<Reminder> reminder = reminderService.findWithoutTime();
         reminder.ifPresent(reminderService::delete);
+        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
         return commandHandler.handleCommand(chatId, data);
     }
 
-    private BotApiMethod<?> handleSetTime(Long chatId) {
+    private BotApiMethod<?> setTimeReminder(Long chatId) {
+
+        if (!chatService.getChat(chatId).getBotState().equals(BotState.SET_TEXT_REMINDER)) {
+            return null;
+        }
         chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
     }
 
     private BotApiMethod<?> addSchedule(Long chatId, DayOfWeek dayOfWeek) {
         scheduleService.addSchedule(dayOfWeek, chatService.getChat(chatId));
-        chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextScheduleMessage(dayOfWeek));
     }
 }
