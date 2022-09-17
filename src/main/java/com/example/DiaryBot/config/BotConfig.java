@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 public class BotConfig {
     //@Value("${telegram.webhook-path}")
-    private final String webhookPath = "https://a324-62-76-212-71.eu.ngrok.io";
+    private final String webhookPath = "https://edf9-2001-67c-418-a001-285c-fe41-f373-2fff.eu.ngrok.io";
 
     //@Value("${telegram.bot-name}")
     private final String botName = "Dailu_Helper_Bot";

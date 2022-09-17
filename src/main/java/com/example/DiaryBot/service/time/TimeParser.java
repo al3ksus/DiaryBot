@@ -31,17 +31,17 @@ public class TimeParser {
         Calendar calendar1 = Calendar.getInstance();
         Calendar calendar2 = Calendar.getInstance();
         long delay;
-        int currentDayOfWeek = calendar1.get(Calendar.DAY_OF_WEEK) + 1;
-        //int hour = calendar1.get(Calendar.HOUR);
-        delay = dayOfWeek.getNumber() > currentDayOfWeek?
-                (dayOfWeek.getNumber() - currentDayOfWeek) * 86_400L:
-                (currentDayOfWeek - dayOfWeek.getNumber()) * 86_400L;
+        int currentDayOfWeek = calendar1.get(Calendar.DAY_OF_WEEK) - 1;
+
+        delay = dayOfWeek.getNumber() >= currentDayOfWeek?
+                calendar1.get(Calendar.HOUR_OF_DAY) < 14? 0: dayOfWeek.getNumber() - currentDayOfWeek * 86_400_000L:
+                (7 - (currentDayOfWeek - dayOfWeek.getNumber())) * 86_400_000L;
 
         calendar2.setTimeInMillis(calendar1.getTimeInMillis() + delay);
-        calendar1 = calendar2;
-        calendar1.set(Calendar.HOUR, 13);
-        calendar1.set(Calendar.MINUTE, 18);
-        calendar2.get(Calendar.HOUR);
+        calendar1.setTimeInMillis(calendar2.getTimeInMillis());
+        calendar1.set(Calendar.HOUR_OF_DAY, 14);
+        calendar1.set(Calendar.MINUTE, 34);
+        calendar1.set(Calendar.SECOND, 0);
         delay = delay + calendar1.getTimeInMillis() - calendar2.getTimeInMillis();
 
         return delay;
