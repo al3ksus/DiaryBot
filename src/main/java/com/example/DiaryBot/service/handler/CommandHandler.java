@@ -2,6 +2,7 @@ package com.example.DiaryBot.service.handler;
 
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
+import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.KeyBoardService;
 import com.example.DiaryBot.service.ReminderService;
@@ -54,7 +55,7 @@ public class CommandHandler {
     }
 
     private BotApiMethod<?> addReminder(Long chatId) {
-        Optional<Reminder> reminder = reminderService.findWithoutTime();
+        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
 
         if (reminder.isPresent()) {

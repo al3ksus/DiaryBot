@@ -4,6 +4,7 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.Schedule;
+import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.service.ScheduleService;
 import com.example.DiaryBot.task.TaskReminder;
 import com.example.DiaryBot.service.ChatService;
@@ -56,16 +57,15 @@ public class BotStateHandler {
         };
     }
 
-    private BotApiMethod<?> setTextReminder(Long chatId, String messageText) {
+    private BotApiMethod<?> setTextReminder(Long chatId, String reminderText) {
 
-        Chat chat = chatService.getChat(chatId);
         chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
-        reminderService.addReminder(chat, messageText);
+        reminderService.addReminder(chatService.getChat(chatId), reminderText);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
     }
 
     private BotApiMethod<?> setTimeReminder(Long chatId, String timeString) {
-        Optional<Reminder> reminder = reminderService.findWithoutTime();
+        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
 
         if (reminder.isPresent()) {
             Timer timer = new Timer();
@@ -81,9 +81,10 @@ public class BotStateHandler {
                 return new SendMessage(String.valueOf(chatId), messageGenerator.pastTimeError());
             }
 
-            chatService.setBotState(chatId, BotState.DEFAULT);
             reminderService.setTime(reminder.get(), timeString);
-            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage());
+            reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
+            chatService.setBotState(chatId, BotState.DEFAULT);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
         }
 
         return null;

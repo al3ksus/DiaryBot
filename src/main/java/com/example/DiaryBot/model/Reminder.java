@@ -1,5 +1,7 @@
 package com.example.DiaryBot.model;
 
+import com.example.DiaryBot.model.enums.BotState;
+import com.example.DiaryBot.model.enums.ReminderState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +29,16 @@ public class Reminder {
 
     private String time;
 
+    @Enumerated(EnumType.STRING)
+    private ReminderState reminderState;
+
     public Reminder(Chat chat, String text) {
         this.chat = chat;
         this.text = text;
+        reminderState = ReminderState.CREATING;
     }
 
     public String toString() {
-        return text + ' ' + (time == null? "": time);
+        return text + '\n' + (time == null? "": time);
     }
 }

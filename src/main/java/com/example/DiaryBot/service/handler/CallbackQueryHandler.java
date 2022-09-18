@@ -3,6 +3,7 @@ package com.example.DiaryBot.service.handler;
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
+import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.ScheduleService;
@@ -52,7 +53,7 @@ public class CallbackQueryHandler {
     }
 
     private BotApiMethod<?> addReminder(Long chatId, String data) {
-        Optional<Reminder> reminder = reminderService.findWithoutTime();
+        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
         reminder.ifPresent(reminderService::delete);
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
         return commandHandler.handleCommand(chatId, data);

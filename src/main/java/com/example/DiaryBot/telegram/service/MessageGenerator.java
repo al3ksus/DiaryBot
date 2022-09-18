@@ -31,8 +31,11 @@ public class MessageGenerator {
         return "Отлично, теперь введи время напоминания";
     }
 
-    public String reminderSavedMessage() {
-        return "Напоминание сохранено";
+    public String reminderSavedMessage(Reminder reminder) {
+
+        return "Напоминание\n"
+                + reminder.toString()
+                + "\nсохранено" ;
     }
 
     public String unfinishedReminderMessage(String text) {

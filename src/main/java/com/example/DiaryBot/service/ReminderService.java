@@ -2,6 +2,7 @@ package com.example.DiaryBot.service;
 
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.model.Reminder;
+import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.repository.ReminderRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +22,22 @@ public class ReminderService {
         reminderRepository.save(new Reminder(chat, text));
     }
 
-    public Optional<Reminder> findWithoutTime() {
-        return reminderRepository.findByTime(null);
+    //public Optional<Reminder> findWithoutTime() {
+        //return reminderRepository.findByTime(null);
+    //}
+
+    public Optional<Reminder> findByState(Chat chat, ReminderState reminderState) {
+        return reminderRepository.findByChatAndReminderState(chat, reminderState);
+    }
+
+    public void setReminderState(Reminder reminder, ReminderState reminderState) {
+        reminder.setReminderState(reminderState);
+        reminderRepository.save(reminder);
     }
 
     public void setTime(Reminder reminder, String time) {
-            reminder.setTime(time);
-            reminderRepository.save(reminder);
+        reminder.setTime(time);
+        reminderRepository.save(reminder);
     }
 
     public void delete(Reminder reminder) {
