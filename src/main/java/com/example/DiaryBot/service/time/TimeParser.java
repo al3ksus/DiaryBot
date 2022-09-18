@@ -29,16 +29,25 @@ public class TimeParser {
         long delay;
         int currentDayOfWeek = calendar1.get(Calendar.DAY_OF_WEEK) - 1;
 
-        delay = dayOfWeek.getNumber() >= currentDayOfWeek?
-                calendar1.get(Calendar.HOUR_OF_DAY) < 14? 0: dayOfWeek.getNumber() - currentDayOfWeek * 86_400_000L:
-                (7 - (currentDayOfWeek - dayOfWeek.getNumber())) * 86_400_000L;
+        if (dayOfWeek.getNumber() < currentDayOfWeek) {
+            delay = (7 - (currentDayOfWeek - dayOfWeek.getNumber())) * 86_400_000L;
+        }
+        else if (dayOfWeek.getNumber() > currentDayOfWeek) {
+            delay = (dayOfWeek.getNumber() - currentDayOfWeek) * 86_400_000L;
+        }
+        else {
+            delay = calendar1.get(Calendar.HOUR_OF_DAY) < 21? 0: 7 * 86_400_000L;
+        }
+
+        System.out.println(delay);
 
         calendar2.setTimeInMillis(calendar1.getTimeInMillis() + delay);
         calendar1.setTimeInMillis(calendar2.getTimeInMillis());
-        calendar1.set(Calendar.HOUR_OF_DAY, 14);
-        calendar1.set(Calendar.MINUTE, 34);
+        calendar1.set(Calendar.HOUR_OF_DAY, 21);
+        calendar1.set(Calendar.MINUTE, 0);
         calendar1.set(Calendar.SECOND, 0);
         delay = delay + calendar1.getTimeInMillis() - calendar2.getTimeInMillis();
+        System.out.println(delay);
 
         return delay;
     }

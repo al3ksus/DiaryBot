@@ -38,4 +38,8 @@ public class ReminderService {
         return reminderRepository.findAllByChat(chat);
     }
 
+    public boolean isExist(Reminder reminder) {
+        return reminderRepository.existsById(reminder.getId());
+    }
+
 }

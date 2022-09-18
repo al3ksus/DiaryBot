@@ -89,6 +89,22 @@ public class BotStateHandler {
         return null;
     }
 
+    private BotApiMethod<?> deleteReminder(Long chatId, String number) {
+        try {
+            List<Reminder> reminderList = reminderService.findAll(chatService.getChat(chatId));
+            reminderService.delete(reminderList.get(Integer.parseInt(number) - 1));
+            chatService.setBotState(chatId, BotState.DEFAULT);
+
+            return new SendMessage(
+                    String.valueOf(chatId),
+                    messageGenerator.reminderDeletedMessage(reminderList.get(Integer.parseInt(number) - 1))
+            );
+        }
+        catch (NumberFormatException | IndexOutOfBoundsException e) {
+            return new SendMessage(String.valueOf(chatId), messageGenerator.invalidNumberError());
+        }
+    }
+
     private BotApiMethod<?> addSchedule(Long chatId, String month) {
         Optional<Schedule> schedule = scheduleService.findWithoutText();
 
@@ -106,21 +122,5 @@ public class BotStateHandler {
         }
 
         return null;
-    }
-
-    private BotApiMethod<?> deleteReminder(Long chatId, String number) {
-        try {
-            List<Reminder> reminderList = reminderService.findAll(chatService.getChat(chatId));
-            reminderService.delete(reminderList.get(Integer.parseInt(number) - 1));
-            chatService.setBotState(chatId, BotState.DEFAULT);
-
-            return new SendMessage(
-                    String.valueOf(chatId),
-                    messageGenerator.reminderDeletedMessage(reminderList.get(Integer.parseInt(number) - 1))
-            );
-        }
-        catch (NumberFormatException | IndexOutOfBoundsException e) {
-            return new SendMessage(String.valueOf(chatId), messageGenerator.invalidNumberError());
-        }
     }
 }

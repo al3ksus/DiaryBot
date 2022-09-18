@@ -37,7 +37,10 @@ public class TaskSchedule extends TimerTask {
         try {
             connection = (HttpURLConnection) new URL(
                     String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
-                            botConfig.getBotToken(), chatId, text.replaceAll("\n", "%0a"))).openConnection();
+                            botConfig.getBotToken(),
+                            chatId,
+                            "Твое расписание на завтра\n" + text.replaceAll("\n", "%0a"))
+                    ).openConnection();
 
             connection.setRequestMethod("GET");
             connection.connect();

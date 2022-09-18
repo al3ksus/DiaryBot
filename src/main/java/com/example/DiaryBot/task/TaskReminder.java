@@ -35,6 +35,12 @@ public class TaskReminder extends TimerTask {
 
     @Override
     public void run() {
+
+        if (!reminderService.isExist(reminder)) {
+            timer.cancel();
+            return;
+        }
+
         BotConfig botConfig = new BotConfig();
 
         HttpURLConnection connection;

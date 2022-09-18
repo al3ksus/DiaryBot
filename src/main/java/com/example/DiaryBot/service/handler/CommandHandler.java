@@ -35,9 +35,15 @@ public class CommandHandler {
 
         return switch (command) {
             case "START" -> start(chatId);
+
             case "ADDREMINDER" -> addReminder(chatId);
+
             case "DELETEREMINDER" -> deleteReminder(chatId);
+
             case "ADDSCHEDULE" -> addSchedule(chatId);
+
+            case "EDITREMINDER" -> editReminder(chatId);
+
             default -> null;
         };
 
@@ -64,9 +70,20 @@ public class CommandHandler {
         return new SendMessage(String.valueOf(chatId), messageGenerator.newReminderMessage());
     }
 
+    private BotApiMethod<?> editReminder(Long chatId) {
+        chatService.setBotState(chatId, BotState.EDIT_REMINDER);
+        return  new SendMessage(
+                String.valueOf(chatId),
+                messageGenerator.reminderListMessage(chatId, "Введи номер напоминания, которого хочешь редактировать\n\n")
+        );
+    }
+
     private BotApiMethod<?> deleteReminder(Long chatId) {
         chatService.setBotState(chatId, BotState.DELETE_REMINDER);
-        return  new SendMessage(String.valueOf(chatId), messageGenerator.deleteReminderMessage(chatId));
+        return  new SendMessage(
+                String.valueOf(chatId),
+                messageGenerator.reminderListMessage(chatId, "Введи номер напоминания, которого хочешь удалить\n\n")
+        );
     }
 
     private BotApiMethod<?> addSchedule(Long chatId) {

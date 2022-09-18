@@ -53,7 +53,7 @@ public class MessageGenerator {
         return "Расписание на " + dayOfWeek.getTitle() + " сохранено";
     }
 
-    public String deleteReminderMessage(Long chatId) {
+    public String reminderListMessage(Long chatId, String text) {
         int number = 1;
         List<Reminder> reminderList = reminderService.findAll(chatService.getChat(chatId));
 
@@ -62,7 +62,7 @@ public class MessageGenerator {
                     + "Чтобы добавить, используй /addreminder";
         }
 
-        StringBuilder message = new StringBuilder("Введи номер напоминания, которого хочешь удалить\n\n");
+        StringBuilder message = new StringBuilder(text);
 
         for (Reminder reminder : reminderList) {
             message.append(number)
