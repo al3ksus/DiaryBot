@@ -22,9 +22,14 @@ public class ReminderService {
         reminderRepository.save(new Reminder(chat, text));
     }
 
-    //public Optional<Reminder> findWithoutTime() {
-        //return reminderRepository.findByTime(null);
-    //}
+    public Optional<Reminder> getReminder(Long id) {
+        return reminderRepository.findById(id);
+    }
+
+
+    public void addReminder(Reminder reminder) {
+        reminderRepository.save(reminder);
+    }
 
     public Optional<Reminder> findByState(Chat chat, ReminderState reminderState) {
         return reminderRepository.findByChatAndReminderState(chat, reminderState);
@@ -37,6 +42,11 @@ public class ReminderService {
 
     public void setTime(Reminder reminder, String time) {
         reminder.setTime(time);
+        reminderRepository.save(reminder);
+    }
+
+    public void setText(Reminder reminder, String text) {
+        reminder.setText(text);
         reminderRepository.save(reminder);
     }
 

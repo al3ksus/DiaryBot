@@ -1,5 +1,6 @@
 package com.example.DiaryBot.service.handler;
 
+import com.example.DiaryBot.config.BotConfig;
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
@@ -38,8 +39,10 @@ public class CallbackQueryHandler {
     public BotApiMethod<?> handleCallBackQuery(Long chatId, String data) {
 
         return switch (data) {
-            case "ADDREMINDER" -> addReminder(chatId, data);
+            case "ADDREMINDER" -> addReminder(chatId);
             case "SETTIME" -> setTimeReminder(chatId);
+            case "SETTEXT" -> setTextReminder(chatId);
+            case "STOPEDITING" -> stopEditing(chatId);
             case "MONDAY" -> addSchedule(chatId, DayOfWeek.MONDAY);
             case "TUESDAY" -> addSchedule(chatId, DayOfWeek.TUESDAY);
             case "WEDNESDAY" -> addSchedule(chatId, DayOfWeek.WEDNESDAY);
@@ -52,20 +55,43 @@ public class CallbackQueryHandler {
 
     }
 
-    private BotApiMethod<?> addReminder(Long chatId, String data) {
+    private BotApiMethod<?> addReminder(Long chatId) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
         reminder.ifPresent(reminderService::delete);
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
-        return commandHandler.handleCommand(chatId, data);
+        return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
     }
 
     private BotApiMethod<?> setTimeReminder(Long chatId) {
+        BotState botState = chatService.getChat(chatId).getBotState();
 
-        if (!chatService.getChat(chatId).getBotState().equals(BotState.SET_TEXT_REMINDER)) {
-            return null;
+        if (botState.equals(BotState.SET_TEXT_REMINDER)) {
+            chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
         }
-        chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
+        else if (botState.equals(BotState.EDIT_REMINDER)) {
+            chatService.setBotState(chatId, BotState.EDIT_TIME_REMINDER);
+        }
+
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
+    }
+
+    private BotApiMethod<?> setTextReminder(Long chatId) {
+        if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
+            chatService.setBotState(chatId, BotState.EDIT_TEXT_REMINDER);
+        }
+
+        return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
+    }
+
+    private BotApiMethod<?> stopEditing(Long chatId) {
+        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
+
+        if (reminder.isPresent()) {
+            reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
+        }
+
+        return null;
     }
 
     private BotApiMethod<?> addSchedule(Long chatId, DayOfWeek dayOfWeek) {

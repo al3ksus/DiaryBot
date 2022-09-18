@@ -51,6 +51,7 @@ public class CommandHandler {
     }
 
     private BotApiMethod<?> start(Long chatId) {
+        chatService.setBotState(chatId, BotState.DEFAULT);
         return new SendMessage(String.valueOf(chatId), messageGenerator.startMessage());
     }
 
@@ -64,11 +65,11 @@ public class CommandHandler {
                     messageGenerator.unfinishedReminderMessage(reminder.get().getText())
             );
 
-            sendMessage.setReplyMarkup(keyBoardService.getReminderButtonRow());
+            sendMessage.setReplyMarkup(keyBoardService.reminderButtonRow());
             return sendMessage;
         }
 
-        return new SendMessage(String.valueOf(chatId), messageGenerator.newReminderMessage());
+        return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
     }
 
     private BotApiMethod<?> editReminder(Long chatId) {
@@ -89,7 +90,7 @@ public class CommandHandler {
 
     private BotApiMethod<?> addSchedule(Long chatId) {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
-        sendMessage.setReplyMarkup(keyBoardService.getWeekButtonRow());
+        sendMessage.setReplyMarkup(keyBoardService.weekButtonRow());
         chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
         return sendMessage;
     }

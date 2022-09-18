@@ -3,21 +3,24 @@ package com.example.DiaryBot.task;
 import com.example.DiaryBot.config.BotConfig;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.service.ReminderService;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
 @Component
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class TaskReminder extends TimerTask {
 
-    private Reminder reminder;
+    private Long reminderId;
 
     private Long chatId;
 
@@ -26,41 +29,38 @@ public class TaskReminder extends TimerTask {
     private ReminderService reminderService;
 
 
-    public TaskReminder(Reminder reminder, Long chatId, Timer timer, ReminderService reminderService) {
-        this.reminder = reminder;
-        this.chatId = chatId;
-        this.timer = timer;
-        this.reminderService = reminderService;
-    }
-
     @Override
     public void run() {
 
-        if (!reminderService.isExist(reminder)) {
-            timer.cancel();
-            return;
-        }
+        Optional<Reminder> reminder = reminderService.getReminder(reminderId);
 
-        BotConfig botConfig = new BotConfig();
+       if (reminder.isPresent()) {
+           if (!reminderService.isExist(reminder.get())) {
+               timer.cancel();
+               return;
+           }
 
-        HttpURLConnection connection;
+           BotConfig botConfig = new BotConfig();
 
-        try {
-            connection = (HttpURLConnection) new URL(
-                    String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
-                            botConfig.getBotToken(), chatId, reminder.getText().replaceAll("\n", "%0a"))).openConnection();
+           HttpURLConnection connection;
 
-            connection.setRequestMethod("GET");
-            connection.connect();
+           try {
+               connection = (HttpURLConnection) new URL(
+                       String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
+                               botConfig.getBotToken(), chatId, reminder.get().getText().replaceAll("\n", "%0a"))).openConnection();
 
-            reminderService.delete(reminder);
-            timer.cancel();
+               connection.setRequestMethod("GET");
+               connection.connect();
 
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+               reminderService.delete(reminder.get());
+               timer.cancel();
+
+               if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                   return;
+               }
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
     }
 }

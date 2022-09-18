@@ -21,14 +21,13 @@ public class MessageGenerator {
         return "Привет!";
     }
 
-    public String newReminderMessage() {
-        return "Ты хочешь создать новое напоминание.\n"
-                + "Введи текст напоминания";
+    public String setTextMessage() {
+        return "Введи текст напоминания";
 
     }
 
     public String setTimeMessage() {
-        return "Отлично, теперь введи время напоминания";
+        return "Введи время напоминания";
     }
 
     public String reminderSavedMessage(Reminder reminder) {
@@ -36,6 +35,10 @@ public class MessageGenerator {
         return "Напоминание\n"
                 + reminder.toString()
                 + "\nсохранено" ;
+    }
+
+    public String editReminderMessage() {
+        return "Выбери, что хочешь изменить";
     }
 
     public String unfinishedReminderMessage(String text) {

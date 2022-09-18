@@ -10,8 +10,7 @@ import java.util.List;
 @Service
 public class KeyBoardService {
 
-    public InlineKeyboardMarkup getReminderButtonRow() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+    public InlineKeyboardMarkup reminderButtonRow() {
 
         InlineKeyboardButton buttonContinue = new InlineKeyboardButton();
         buttonContinue.setText("Указать время");
@@ -21,19 +20,41 @@ public class KeyBoardService {
         buttonNew.setText("Добавить новое");
         buttonNew.setCallbackData("AddReminder");
 
-        List<InlineKeyboardButton> row = new ArrayList<>();
-        row.add(buttonContinue);
-        row.add(buttonNew);
+        return getInlineKeyboardMarkup(buttonContinue, buttonNew);
+    }
+
+    public InlineKeyboardMarkup editReminderButtonRow() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        InlineKeyboardButton buttonText = new InlineKeyboardButton();
+        buttonText.setText("Текст");
+        buttonText.setCallbackData("SetText");
+
+        InlineKeyboardButton buttonTime = new InlineKeyboardButton();
+        buttonTime.setText("Время");
+        buttonTime.setCallbackData("SetTime");
+
+        InlineKeyboardButton buttonStop = new InlineKeyboardButton();
+        buttonStop.setText("Закончить");
+        buttonStop.setCallbackData("StopEditing");
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+        row1.add(buttonText);
+        row1.add(buttonTime);
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+        row2.add(buttonStop);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(row);
+        rowList.add(row1);
+        rowList.add(row2);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
 
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getWeekButtonRow() {
+    public InlineKeyboardMarkup weekButtonRow() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         InlineKeyboardButton buttonMonday = new InlineKeyboardButton();
@@ -81,6 +102,21 @@ public class KeyBoardService {
         rowList.add(row1);
         rowList.add(row2);
         rowList.add(row3);
+
+        inlineKeyboardMarkup.setKeyboard(rowList);
+
+        return inlineKeyboardMarkup;
+    }
+
+    private InlineKeyboardMarkup getInlineKeyboardMarkup(InlineKeyboardButton button1, InlineKeyboardButton button2) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(button1);
+        row.add(button2);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(row);
 
         inlineKeyboardMarkup.setKeyboard(rowList);
 
