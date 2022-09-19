@@ -4,7 +4,7 @@ import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.handler.BotStateHandler;
 import com.example.DiaryBot.service.handler.CallbackQueryHandler;
 import com.example.DiaryBot.service.handler.CommandHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;

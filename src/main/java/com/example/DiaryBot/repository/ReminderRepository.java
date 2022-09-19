@@ -11,9 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface ReminderRepository extends JpaRepository<Reminder, Long> {
-    Optional<Reminder> findByTime(String time);
 
     Optional<Reminder> findByChatAndReminderState(Chat chat, ReminderState reminderState);
 
     List<Reminder> findAllByChat(Chat chat);
+
+    List<Reminder> findAllByChatAndReminderState(Chat chat, ReminderState reminderState);
 }

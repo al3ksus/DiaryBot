@@ -8,13 +8,16 @@ import com.example.DiaryBot.service.KeyBoardService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class CommandHandler {
 
     private final MessageGenerator messageGenerator;
@@ -24,13 +27,6 @@ public class CommandHandler {
     private final ReminderService reminderService;
 
     private final KeyBoardService keyBoardService;
-
-    public CommandHandler(MessageGenerator messageGenerator, ChatService chatService, ReminderService reminderService, KeyBoardService keyBoardService, BotStateHandler botStateHandler) {
-        this.messageGenerator = messageGenerator;
-        this.chatService = chatService;
-        this.reminderService = reminderService;
-        this.keyBoardService = keyBoardService;
-    }
 
     public BotApiMethod<?> handleCommand(Long chatId, String command) {
 
@@ -73,6 +69,8 @@ public class CommandHandler {
     }
 
     private BotApiMethod<?> editReminder(Long chatId) {
+        List<Reminder> reminderList = reminderService.findAllByState(chatService.getChat(chatId), ReminderState.EDITING);
+        reminderList.forEach(r -> reminderService.setReminderState(r, ReminderState.DEFAULT));
         chatService.setBotState(chatId, BotState.EDIT_REMINDER);
         return  new SendMessage(
                 String.valueOf(chatId),
@@ -95,3 +93,4 @@ public class CommandHandler {
         return sendMessage;
     }
 }
+

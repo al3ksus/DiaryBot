@@ -1,6 +1,6 @@
 package com.example.DiaryBot.service.handler;
 
-import com.example.DiaryBot.config.BotConfig;
+
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
@@ -9,6 +9,8 @@ import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.ScheduleService;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
+import lombok.AllArgsConstructor;
+import org.checkerframework.checker.nullness.Opt;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,25 +18,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class CallbackQueryHandler {
 
     private final ReminderService reminderService;
-
-    private final CommandHandler commandHandler;
 
     private final ChatService chatService;
 
     private final MessageGenerator messageGenerator;
 
     private final ScheduleService scheduleService;
-
-    public CallbackQueryHandler(ReminderService reminderService, ChatService chatService, CommandHandler commandHandler, MessageGenerator messageGenerator, ScheduleService scheduleService) {
-        this.reminderService = reminderService;
-        this.commandHandler = commandHandler;
-        this.chatService = chatService;
-        this.messageGenerator = messageGenerator;
-        this.scheduleService = scheduleService;
-    }
 
     public BotApiMethod<?> handleCallBackQuery(Long chatId, String data) {
 
@@ -69,6 +62,13 @@ public class CallbackQueryHandler {
             chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
         }
         else if (botState.equals(BotState.EDIT_REMINDER)) {
+            Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
+
+            if (reminder.isEmpty()) {
+                chatService.setBotState(chatId, BotState.DEFAULT);
+                return new SendMessage(String.valueOf(chatId), messageGenerator.nullReminderMessage());
+            }
+
             chatService.setBotState(chatId, BotState.EDIT_TIME_REMINDER);
         }
 

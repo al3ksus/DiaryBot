@@ -35,6 +35,10 @@ public class ReminderService {
         return reminderRepository.findByChatAndReminderState(chat, reminderState);
     }
 
+    public List<Reminder> findAllByState(Chat chat, ReminderState reminderState) {
+        return reminderRepository.findAllByChatAndReminderState(chat, reminderState);
+    }
+
     public void setReminderState(Reminder reminder, ReminderState reminderState) {
         reminder.setReminderState(reminderState);
         reminderRepository.save(reminder);

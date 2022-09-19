@@ -27,7 +27,8 @@ public class MessageGenerator {
     }
 
     public String setTimeMessage() {
-        return "Введи время напоминания";
+        return "Введи время напоминания\n"
+                + "Пример ввода: 12:00 10.10.2022";
     }
 
     public String reminderSavedMessage(Reminder reminder) {
@@ -95,5 +96,9 @@ public class MessageGenerator {
 
     public String pastTimeError() {
         return "Нельзя назначить напоминание на время, которое уже прошло, попробуй еще раз";
+    }
+
+    public String nullReminderMessage() {
+        return "Данное напоминание уже сработало";
     }
 }
