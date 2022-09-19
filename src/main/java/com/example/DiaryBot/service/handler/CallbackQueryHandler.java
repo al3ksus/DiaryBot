@@ -56,39 +56,43 @@ public class CallbackQueryHandler {
     }
 
     private BotApiMethod<?> setTimeReminder(Long chatId) {
-        BotState botState = chatService.getChat(chatId).getBotState();
-
-        if (botState.equals(BotState.SET_TEXT_REMINDER)) {
-            chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
-        }
-        else if (botState.equals(BotState.EDIT_REMINDER)) {
-            Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
-
-            if (reminder.isEmpty()) {
-                chatService.setBotState(chatId, BotState.DEFAULT);
-                return new SendMessage(String.valueOf(chatId), messageGenerator.nullReminderMessage());
-            }
+        if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
 
             chatService.setBotState(chatId, BotState.EDIT_TIME_REMINDER);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
         }
 
-        return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
+        return null;
     }
 
     private BotApiMethod<?> setTextReminder(Long chatId) {
         if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
+
+            if (!reminderService.isExistByState(ReminderState.EDITING)) {
+                chatService.setBotState(chatId, BotState.DEFAULT);
+                return new SendMessage(String.valueOf(chatId), messageGenerator.nullReminderMessage());
+            }
+
             chatService.setBotState(chatId, BotState.EDIT_TEXT_REMINDER);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
         }
 
-        return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
+        return null;
     }
 
     private BotApiMethod<?> stopEditing(Long chatId) {
-        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
+        if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
+            Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
 
-        if (reminder.isPresent()) {
-            reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
-            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
+            if (reminder.isPresent()) {
+                chatService.setBotState(chatId, BotState.DEFAULT);
+                reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
+                return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
+            }
+            else {
+                chatService.setBotState(chatId, BotState.DEFAULT);
+                return new SendMessage(String.valueOf(chatId), messageGenerator.nullReminderMessage());
+            }
         }
 
         return null;

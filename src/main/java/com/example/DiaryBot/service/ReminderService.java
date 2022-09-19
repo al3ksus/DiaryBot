@@ -66,4 +66,8 @@ public class ReminderService {
         return reminderRepository.existsById(reminder.getId());
     }
 
+    public boolean isExistByState(ReminderState reminderState) {
+        return reminderRepository.existsByReminderState(reminderState);
+    }
+
 }

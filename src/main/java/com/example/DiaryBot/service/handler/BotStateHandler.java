@@ -106,7 +106,6 @@ public class BotStateHandler {
                 TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService);
                 task.getTimer().schedule(task, delay);
 
-                reminderService.setReminderState(reminder.get(), ReminderState.EDITING);
                 reminderService.setTime(reminder.get(), timeString);
 
             }
