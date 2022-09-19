@@ -4,7 +4,7 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.service.ChatService;
-import com.example.DiaryBot.service.KeyBoardService;
+import com.example.DiaryBot.service.keyboard.KeyboardService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
 
@@ -26,7 +26,7 @@ public class CommandHandler {
 
     private final ReminderService reminderService;
 
-    private final KeyBoardService keyBoardService;
+    private final KeyboardService keyboardService;
 
     public BotApiMethod<?> handleCommand(Long chatId, String command) {
 
@@ -55,15 +55,7 @@ public class CommandHandler {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
 
-        if (reminder.isPresent()) {
-            SendMessage sendMessage = new SendMessage(
-                    String.valueOf(chatId),
-                    messageGenerator.unfinishedReminderMessage(reminder.get().getText())
-            );
-
-            sendMessage.setReplyMarkup(keyBoardService.reminderButtonRow());
-            return sendMessage;
-        }
+        reminder.ifPresent(reminderService::delete);
 
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
     }
@@ -88,7 +80,7 @@ public class CommandHandler {
 
     private BotApiMethod<?> addSchedule(Long chatId) {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
-        sendMessage.setReplyMarkup(keyBoardService.weekButtonRow());
+        sendMessage.setReplyMarkup(keyboardService.weekButtonRow());
         chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
         return sendMessage;
     }

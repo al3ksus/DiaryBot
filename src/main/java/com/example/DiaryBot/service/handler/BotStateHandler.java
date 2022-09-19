@@ -4,7 +4,7 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.Schedule;
 import com.example.DiaryBot.model.enums.ReminderState;
-import com.example.DiaryBot.service.KeyBoardService;
+import com.example.DiaryBot.service.keyboard.KeyboardService;
 import com.example.DiaryBot.service.ScheduleService;
 import com.example.DiaryBot.task.TaskReminder;
 import com.example.DiaryBot.service.ChatService;
@@ -36,7 +36,7 @@ public class BotStateHandler {
 
     private final TimeParser timeParser;
 
-    private final KeyBoardService keyBoardService;
+    private final KeyboardService keyboardService;
 
     public BotApiMethod<?> handleBotState(Long chatId, String messageText, BotState botState) {
 
@@ -71,17 +71,15 @@ public class BotStateHandler {
 
         if (reminder.isPresent()) {
             Timer timer = new Timer();
-            TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService);
+            TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService, chatService, timeParser);
 
             try {
                 task.getTimer().schedule(task, timeParser.getDelay(timeString));
             }
             catch (ParseException e) {
-                System.out.println(e.getMessage());
                 return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
             }
             catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
                 return new SendMessage(String.valueOf(chatId), messageGenerator.pastTimeError());
             }
 
@@ -100,29 +98,16 @@ public class BotStateHandler {
         if (reminder.isPresent()) {
 
             try {
-                long delay = timeParser.getDelay(timeString);
-
-                Timer timer = new Timer();
-                TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService);
-                task.getTimer().schedule(task, delay);
-
-                reminderService.setTime(reminder.get(), timeString);
-
-            }
-            catch (ParseException e) {
+                if (timeParser.isPast(timeString)) {
+                    return new SendMessage(String.valueOf(chatId), messageGenerator.pastTimeError());
+                }
+            } catch (ParseException e) {
                 return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
             }
-            catch (IllegalArgumentException e) {
-                return new SendMessage(String.valueOf(chatId), messageGenerator.pastTimeError());
-            }
 
+            reminderService.setTime(reminder.get(), timeString);
             chatService.setBotState(chatId, BotState.EDIT_REMINDER);
-            SendMessage sendMessage = new SendMessage(
-                    String.valueOf(chatId),
-                    messageGenerator.reminderSavedMessage(reminder.get()) + "\n\n" +messageGenerator.editReminderMessage());
-            sendMessage.setReplyMarkup(keyBoardService.editReminderButtonRow());
-
-            return sendMessage;
+            return saveChanges(chatId);
         }
 
         return null;
@@ -134,14 +119,33 @@ public class BotStateHandler {
         if (reminder.isPresent()) {
             reminderService.setText(reminder.get(), text);
             chatService.setBotState(chatId, BotState.EDIT_REMINDER);
+            return saveChanges(chatId);
+        }
 
-            SendMessage sendMessage = new SendMessage(
-                    String.valueOf(chatId),
-                    messageGenerator.reminderSavedMessage(reminder.get()) + "\n\n" +messageGenerator.editReminderMessage());
+        return null;
+    }
 
-            sendMessage.setReplyMarkup(keyBoardService.editReminderButtonRow());
+    private BotApiMethod<?> saveChanges(Long chatId) {
+        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
 
-            return sendMessage;
+        if (reminder.isPresent()) {
+
+            Timer timer = new Timer();
+            TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService, chatService, timeParser);
+
+            try {
+                task.getTimer().schedule(task, timeParser.getDelay(reminder.get().getTime()));
+            }
+            catch (ParseException e) {
+                return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
+            }
+            catch (IllegalArgumentException e) {
+                task.getTimer().schedule(task, 1000);
+            }
+
+            chatService.setBotState(chatId, BotState.DEFAULT);
+            reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
+            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
         }
 
         return null;
@@ -158,7 +162,7 @@ public class BotStateHandler {
         }
 
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.editReminderMessage());
-        sendMessage.setReplyMarkup(keyBoardService.editReminderButtonRow());
+        sendMessage.setReplyMarkup(keyboardService.editReminderButtonRow());
         return sendMessage;
     }
 

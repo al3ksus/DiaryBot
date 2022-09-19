@@ -2,7 +2,11 @@ package com.example.DiaryBot.task;
 
 import com.example.DiaryBot.config.BotConfig;
 import com.example.DiaryBot.model.Reminder;
+import com.example.DiaryBot.model.enums.BotState;
+import com.example.DiaryBot.model.enums.ReminderState;
+import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
+import com.example.DiaryBot.service.time.TimeParser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,16 +33,36 @@ public class TaskReminder extends TimerTask {
 
     private ReminderService reminderService;
 
+    private ChatService chatService;
+
+    private TimeParser timeParser;
 
     @Override
     public void run() {
 
         Optional<Reminder> reminder = reminderService.getReminder(reminderId);
+        BotState botState = chatService.getChat(chatId).getBotState();
 
        if (reminder.isPresent()) {
-           if (!reminderService.isExist(reminder.get())) {
-               timer.cancel();
-               return;
+
+           try {
+               if (!timeParser.isPast(reminder.get().getTime())) {
+                   System.out.println("future");
+                   return;
+               }
+           } catch (ParseException e) {
+               throw new RuntimeException(e);
+           }
+
+           if (reminder.get().getReminderState().equals(ReminderState.EDITING)){
+               if ((botState.equals(BotState.EDIT_REMINDER) ||
+                       botState.equals(BotState.EDIT_TEXT_REMINDER) ||
+                       botState.equals(BotState.EDIT_TIME_REMINDER))
+               ) {
+                   System.out.println("editing");
+                   timer.cancel();
+                   return;
+               }
            }
 
            BotConfig botConfig = new BotConfig();
@@ -62,5 +87,7 @@ public class TaskReminder extends TimerTask {
                e.printStackTrace();
            }
        }
+        System.out.println("non-exist");
+        timer.cancel();
     }
 }

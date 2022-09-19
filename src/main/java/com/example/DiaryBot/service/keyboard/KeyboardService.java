@@ -1,4 +1,4 @@
-package com.example.DiaryBot.service;
+package com.example.DiaryBot.service.keyboard;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class KeyBoardService {
+public class KeyboardService {
 
     public InlineKeyboardMarkup reminderButtonRow() {
 
@@ -24,7 +24,6 @@ public class KeyBoardService {
     }
 
     public InlineKeyboardMarkup editReminderButtonRow() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         InlineKeyboardButton buttonText = new InlineKeyboardButton();
         buttonText.setText("Текст");
@@ -34,24 +33,7 @@ public class KeyBoardService {
         buttonTime.setText("Время");
         buttonTime.setCallbackData("SetTime");
 
-        InlineKeyboardButton buttonStop = new InlineKeyboardButton();
-        buttonStop.setText("Закончить");
-        buttonStop.setCallbackData("StopEditing");
-
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
-        row1.add(buttonText);
-        row1.add(buttonTime);
-
-        List<InlineKeyboardButton> row2 = new ArrayList<>();
-        row2.add(buttonStop);
-
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(row1);
-        rowList.add(row2);
-
-        inlineKeyboardMarkup.setKeyboard(rowList);
-
-        return inlineKeyboardMarkup;
+        return getInlineKeyboardMarkup(buttonText, buttonTime);
     }
 
     public InlineKeyboardMarkup weekButtonRow() {

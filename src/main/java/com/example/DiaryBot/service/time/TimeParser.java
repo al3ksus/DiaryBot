@@ -20,6 +20,7 @@ public class TimeParser {
         date = formatter.parse(timeString);
         delay = date.getTime() - calendar.getTimeInMillis();
 
+        System.out.println(delay);
         return delay;
     }
 
@@ -39,16 +40,20 @@ public class TimeParser {
             delay = calendar1.get(Calendar.HOUR_OF_DAY) < 21? 0: 7 * 86_400_000L;
         }
 
-        System.out.println(delay);
-
         calendar2.setTimeInMillis(calendar1.getTimeInMillis() + delay);
         calendar1.setTimeInMillis(calendar2.getTimeInMillis());
         calendar1.set(Calendar.HOUR_OF_DAY, 21);
         calendar1.set(Calendar.MINUTE, 0);
         calendar1.set(Calendar.SECOND, 0);
         delay = delay + calendar1.getTimeInMillis() - calendar2.getTimeInMillis();
-        System.out.println(delay);
 
         return delay;
+    }
+
+    public boolean isPast(String timeString) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+
+        return formatter.parse(timeString).getTime() < calendar.getTimeInMillis();
     }
 }
