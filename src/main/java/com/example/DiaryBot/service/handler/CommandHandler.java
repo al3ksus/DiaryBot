@@ -1,9 +1,12 @@
 package com.example.DiaryBot.service.handler;
 
+import com.example.DiaryBot.model.Schedule;
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.ReminderState;
+import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.service.ChatService;
+import com.example.DiaryBot.service.ScheduleService;
 import com.example.DiaryBot.service.keyboard.KeyboardService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
@@ -28,6 +31,8 @@ public class CommandHandler {
 
     private final KeyboardService keyboardService;
 
+    private final ScheduleService scheduleService;
+
     public BotApiMethod<?> handleCommand(Long chatId, String command) {
 
         return switch (command) {
@@ -35,11 +40,13 @@ public class CommandHandler {
 
             case "ADDREMINDER" -> addReminder(chatId);
 
+            case "EDITREMINDER" -> editReminder(chatId);
+
+            case "GETREMINDERLIST" -> getReminderList(chatId);
+
             case "DELETEREMINDER" -> deleteReminder(chatId);
 
-            case "ADDSCHEDULE" -> addSchedule(chatId);
-
-            case "EDITREMINDER" -> editReminder(chatId);
+            case "SCHEDULE" -> schedule(chatId);
 
             default -> null;
         };
@@ -54,9 +61,7 @@ public class CommandHandler {
     private BotApiMethod<?> addReminder(Long chatId) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
         chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
-
         reminder.ifPresent(reminderService::delete);
-
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
     }
 
@@ -70,6 +75,10 @@ public class CommandHandler {
         );
     }
 
+    public BotApiMethod<?> getReminderList(Long chatId) {
+        return new SendMessage(String.valueOf(chatId), messageGenerator.reminderListMessage(chatId, ""));
+    }
+
     private BotApiMethod<?> deleteReminder(Long chatId) {
         chatService.setBotState(chatId, BotState.DELETE_REMINDER);
         return  new SendMessage(
@@ -78,10 +87,10 @@ public class CommandHandler {
         );
     }
 
-    private BotApiMethod<?> addSchedule(Long chatId) {
+    private BotApiMethod<?> schedule(Long chatId) {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
         sendMessage.setReplyMarkup(keyboardService.weekButtonRow());
-        chatService.setBotState(chatId, BotState.ADD_SCHEDULE);
+        chatService.setBotState(chatId, BotState.SCHEDULE);
         return sendMessage;
     }
 }

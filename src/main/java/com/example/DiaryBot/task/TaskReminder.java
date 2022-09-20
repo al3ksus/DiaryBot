@@ -10,8 +10,10 @@ import com.example.DiaryBot.service.time.TimeParser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -47,7 +49,6 @@ public class TaskReminder extends TimerTask {
 
            try {
                if (!timeParser.isPast(reminder.get().getTime())) {
-                   System.out.println("future");
                    return;
                }
            } catch (ParseException e) {
@@ -59,7 +60,6 @@ public class TaskReminder extends TimerTask {
                        botState.equals(BotState.EDIT_TEXT_REMINDER) ||
                        botState.equals(BotState.EDIT_TIME_REMINDER))
                ) {
-                   System.out.println("editing");
                    timer.cancel();
                    return;
                }
@@ -72,7 +72,10 @@ public class TaskReminder extends TimerTask {
            try {
                connection = (HttpURLConnection) new URL(
                        String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
-                               botConfig.getBotToken(), chatId, reminder.get().getText().replaceAll("\n", "%0a"))).openConnection();
+                               botConfig.getBotToken(),
+                               chatId,
+                               "Напоминаю\n" + reminder.get().getText().replaceAll("\n", "%0a"))
+                       ).openConnection();
 
                connection.setRequestMethod("GET");
                connection.connect();
@@ -83,11 +86,12 @@ public class TaskReminder extends TimerTask {
                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                    return;
                }
-           } catch (Exception e) {
-               e.printStackTrace();
+           } catch (OptimisticLockingFailureException e) {
+               return;
+           } catch (IOException e) {
+               throw new RuntimeException(e);
            }
        }
-        System.out.println("non-exist");
         timer.cancel();
     }
 }

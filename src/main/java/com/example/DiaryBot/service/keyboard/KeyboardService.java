@@ -10,28 +10,15 @@ import java.util.List;
 @Service
 public class KeyboardService {
 
-    public InlineKeyboardMarkup reminderButtonRow() {
-
-        InlineKeyboardButton buttonContinue = new InlineKeyboardButton();
-        buttonContinue.setText("Указать время");
-        buttonContinue.setCallbackData("SetTime");
-
-        InlineKeyboardButton buttonNew = new InlineKeyboardButton();
-        buttonNew.setText("Добавить новое");
-        buttonNew.setCallbackData("AddReminder");
-
-        return getInlineKeyboardMarkup(buttonContinue, buttonNew);
-    }
-
     public InlineKeyboardMarkup editReminderButtonRow() {
 
         InlineKeyboardButton buttonText = new InlineKeyboardButton();
         buttonText.setText("Текст");
-        buttonText.setCallbackData("SetText");
+        buttonText.setCallbackData("EditText");
 
         InlineKeyboardButton buttonTime = new InlineKeyboardButton();
         buttonTime.setText("Время");
-        buttonTime.setCallbackData("SetTime");
+        buttonTime.setCallbackData("EditTime");
 
         return getInlineKeyboardMarkup(buttonText, buttonTime);
     }

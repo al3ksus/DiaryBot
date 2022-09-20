@@ -4,6 +4,7 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.Schedule;
 import com.example.DiaryBot.model.enums.ReminderState;
+import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.service.keyboard.KeyboardService;
 import com.example.DiaryBot.service.ScheduleService;
 import com.example.DiaryBot.task.TaskReminder;
@@ -45,15 +46,15 @@ public class BotStateHandler {
 
             case SET_TIME_REMINDER ->  setTimeReminder(chatId, messageText);
 
-            case ADD_SCHEDULE -> addSchedule(chatId, messageText);
-
-            case DELETE_REMINDER -> deleteReminder(chatId, messageText);
-
             case EDIT_REMINDER -> editReminder(chatId, messageText);
 
             case EDIT_TIME_REMINDER -> editTimeReminder(chatId, messageText);
 
             case EDIT_TEXT_REMINDER -> editTextReminder(chatId, messageText);
+
+            case DELETE_REMINDER -> deleteReminder(chatId, messageText);
+
+            case SCHEDULE -> schedule(chatId, messageText);
 
             default -> null;
         };
@@ -106,7 +107,6 @@ public class BotStateHandler {
             }
 
             reminderService.setTime(reminder.get(), timeString);
-            chatService.setBotState(chatId, BotState.EDIT_REMINDER);
             return saveChanges(chatId);
         }
 
@@ -183,22 +183,24 @@ public class BotStateHandler {
         );
     }
 
-    private BotApiMethod<?> addSchedule(Long chatId, String month) {
-        Optional<Schedule> schedule = scheduleService.findWithoutText();
+    private BotApiMethod<?> schedule(Long chatId, String text) {
+        Optional<Schedule> schedule = scheduleService.findByState(chatService.getChat(chatId), ScheduleState.EDITING);
 
         if (schedule.isPresent()) {
-            Timer timer = new Timer();
-            TaskSchedule task = new TaskSchedule(month, chatId, timer);
-            scheduleService.setText(schedule.get(), month);
-            timer.schedule(task, timeParser.getDelayForSchedule(schedule.get().getDayOfWeek()), 604_800_000);
-            chatService.setBotState(chatId, BotState.DEFAULT);
+            if (schedule.get().getText() == null) {
+                Timer timer = new Timer();
+                TaskSchedule task = new TaskSchedule(schedule.get().getId(), chatId, timer, scheduleService, chatService);
+                timer.schedule(task, timeParser.getDelayForSchedule(schedule.get().getDayOfWeek().getNumber()), 604_800_000);
+            }
 
+            scheduleService.setText(schedule.get(), text);
+            scheduleService.setState(schedule.get(), ScheduleState.DEFAULT);
+            chatService.setBotState(chatId, BotState.DEFAULT);
             return new SendMessage(
                     String.valueOf(chatId),
                     messageGenerator.scheduleSavedMessage(schedule.get().getDayOfWeek())
             );
         }
-
         return null;
     }
 }

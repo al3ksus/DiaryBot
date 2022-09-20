@@ -1,6 +1,7 @@
 package com.example.DiaryBot.model;
 
 import com.example.DiaryBot.model.enums.DayOfWeek;
+import com.example.DiaryBot.model.enums.ScheduleState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,17 +21,21 @@ public class Schedule {
     @Column(nullable = false)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private DayOfWeek dayOfWeek;
-
-    private String text;
-
     @OneToOne
     private Chat chat;
 
-    public Schedule(DayOfWeek dayOfWeek, Chat chat) {
-        this.dayOfWeek = dayOfWeek;
+    private String text;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek dayOfWeek;
+
+    @Enumerated(EnumType.STRING)
+    private ScheduleState scheduleState;
+
+    public Schedule(Chat chat, DayOfWeek dayOfWeek) {
         this.chat = chat;
+        this.dayOfWeek = dayOfWeek;
+        scheduleState = ScheduleState.EDITING;
     }
 
     public Schedule(DayOfWeek dayOfWeek, String text, Chat chat) {

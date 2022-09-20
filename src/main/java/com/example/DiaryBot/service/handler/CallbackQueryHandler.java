@@ -1,10 +1,12 @@
 package com.example.DiaryBot.service.handler;
 
 
+import com.example.DiaryBot.model.Schedule;
 import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
 import com.example.DiaryBot.model.enums.ReminderState;
+import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.ScheduleService;
@@ -34,29 +36,21 @@ public class CallbackQueryHandler {
     public BotApiMethod<?> handleCallBackQuery(Long chatId, String data) {
 
         return switch (data) {
-            case "ADDREMINDER" -> addReminder(chatId);
-            case "SETTIME" -> setTimeReminder(chatId);
-            case "SETTEXT" -> setTextReminder(chatId);
-            case "MONDAY" -> addSchedule(chatId, DayOfWeek.MONDAY);
-            case "TUESDAY" -> addSchedule(chatId, DayOfWeek.TUESDAY);
-            case "WEDNESDAY" -> addSchedule(chatId, DayOfWeek.WEDNESDAY);
-            case "THURSDAY" -> addSchedule(chatId, DayOfWeek.THURSDAY);
-            case "FRIDAY" -> addSchedule(chatId, DayOfWeek.FRIDAY);
-            case "SATURDAY" -> addSchedule(chatId, DayOfWeek.SATURDAY);
-            case "SUNDAY" -> addSchedule(chatId, DayOfWeek.SUNDAY);
+            case "EDITTIME" -> editTimeReminder(chatId);
+            case "EDITTEXT" -> editTextReminder(chatId);
+            case "MONDAY" -> schedule(chatId, DayOfWeek.MONDAY);
+            case "TUESDAY" -> schedule(chatId, DayOfWeek.TUESDAY);
+            case "WEDNESDAY" -> schedule(chatId, DayOfWeek.WEDNESDAY);
+            case "THURSDAY" -> schedule(chatId, DayOfWeek.THURSDAY);
+            case "FRIDAY" -> schedule(chatId, DayOfWeek.FRIDAY);
+            case "SATURDAY" -> schedule(chatId, DayOfWeek.SATURDAY);
+            case "SUNDAY" -> schedule(chatId, DayOfWeek.SUNDAY);
             default -> null;
         };
 
     }
 
-    private BotApiMethod<?> addReminder(Long chatId) {
-        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
-        reminder.ifPresent(reminderService::delete);
-        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
-        return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
-    }
-
-    private BotApiMethod<?> setTimeReminder(Long chatId) {
+    private BotApiMethod<?> editTimeReminder(Long chatId) {
         if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
             chatService.setBotState(chatId, BotState.EDIT_TIME_REMINDER);
             return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
@@ -65,7 +59,7 @@ public class CallbackQueryHandler {
         return null;
     }
 
-    private BotApiMethod<?> setTextReminder(Long chatId) {
+    private BotApiMethod<?> editTextReminder(Long chatId) {
         if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
             chatService.setBotState(chatId, BotState.EDIT_TEXT_REMINDER);
             return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
@@ -74,8 +68,15 @@ public class CallbackQueryHandler {
         return null;
     }
 
-    private BotApiMethod<?> addSchedule(Long chatId, DayOfWeek dayOfWeek) {
-        scheduleService.addSchedule(dayOfWeek, chatService.getChat(chatId));
+    private BotApiMethod<?> schedule(Long chatId, DayOfWeek dayOfWeek) {
+        Optional<Schedule> schedule = scheduleService.findByDay(chatService.getChat(chatId), dayOfWeek);
+
+        if (schedule.isEmpty()) {
+            scheduleService.addSchedule(chatService.getChat(chatId), dayOfWeek);
+        }
+
+        schedule.ifPresent(s -> scheduleService.setState(s, ScheduleState.EDITING));
+        chatService.setBotState(chatId, BotState.SCHEDULE);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextScheduleMessage(dayOfWeek));
     }
 }
