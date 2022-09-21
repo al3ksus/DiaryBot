@@ -31,13 +31,11 @@ public class CallbackQueryHandler {
 
     private final ScheduleService scheduleService;
 
-    private final TimeParser timeParser;
-
     public BotApiMethod<?> handleCallBackQuery(Long chatId, String data) {
 
         return switch (data) {
-            case "EDITTIME" -> editTimeReminder(chatId);
-            case "EDITTEXT" -> editTextReminder(chatId);
+            case "EDITTIME" -> editReminderTime(chatId);
+            case "EDITTEXT" -> editReminderText(chatId);
             case "MONDAY" -> schedule(chatId, DayOfWeek.MONDAY);
             case "TUESDAY" -> schedule(chatId, DayOfWeek.TUESDAY);
             case "WEDNESDAY" -> schedule(chatId, DayOfWeek.WEDNESDAY);
@@ -50,18 +48,18 @@ public class CallbackQueryHandler {
 
     }
 
-    private BotApiMethod<?> editTimeReminder(Long chatId) {
+    private BotApiMethod<?> editReminderTime(Long chatId) {
         if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
-            chatService.setBotState(chatId, BotState.EDIT_TIME_REMINDER);
+            chatService.setBotState(chatId, BotState.EDIT_REMINDER_TIME);
             return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
         }
 
         return null;
     }
 
-    private BotApiMethod<?> editTextReminder(Long chatId) {
+    private BotApiMethod<?> editReminderText(Long chatId) {
         if (chatService.getChat(chatId).getBotState().equals(BotState.EDIT_REMINDER)) {
-            chatService.setBotState(chatId, BotState.EDIT_TEXT_REMINDER);
+            chatService.setBotState(chatId, BotState.EDIT_REMINDER_TEXT);
             return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
         }
 

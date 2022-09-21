@@ -19,6 +19,8 @@ public class TimeParser {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
 
         date = formatter.parse(timeString);
+        calendar.setTimeInMillis(date.getTime());
+        System.out.println(calendar.getTime());
         delay = date.getTime() - calendar.getTimeInMillis();
 
         return delay;

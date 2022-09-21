@@ -7,7 +7,6 @@ import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,14 +33,6 @@ public class ScheduleService {
     public Optional<Schedule> findByState(Chat chat, ScheduleState scheduleState) {
         return scheduleRepository.findByChatAndScheduleState(chat, scheduleState);
     }
-
-    public void delete(Schedule schedule) {
-        scheduleRepository.delete(schedule);
-    }
-
-    //public Optional<Schedule> findWithoutText() {
-        //return scheduleRepository.findByText(null);
-    //}
 
     public void setText(Schedule schedule, String text) {
         schedule.setText(text);

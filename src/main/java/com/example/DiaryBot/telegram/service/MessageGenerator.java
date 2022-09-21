@@ -19,11 +19,29 @@ public class MessageGenerator {
     private final ChatService chatService;
 
     public String startMessage() {
-        return "Привет!";
+        return "Привет!\nДля более подробной информации, используй команду /help";
     }
 
     public String help() {
-        return "А МОЖЕТ ТЫ ЧОРТ";
+        return """
+                Этот бот может отправлять тебе напоминаия в указанное тобой
+                время. Также ты можешь составить расписание на каждый
+                день недели, а бот отправит его тебе в 21:00 перед указанным
+                днем, то есть расписание на вторник бот отправит в
+                понедельник в 21:00, чтобы ты с вечера мог подготовиться
+                к следующему дню.
+                
+                Команды:
+                /start    инициализация чата, это можно сделать один раз в начале использования
+                /help    получить подробную информацию о боте
+                /add    добавить напоминание
+                /getlist    посмотреть список всех своих напоминаний
+                /edit    редактировать напоминание
+                /delete    удалить напоминание
+                /schedule    составить расписание
+                
+                для вопросов и предложений пишите на почту
+                aleksejukrainskij7554@gmail.com""";
     }
 
     public String setTextMessage() {
@@ -47,12 +65,6 @@ public class MessageGenerator {
         return "Выбери, что хочешь изменить";
     }
 
-    public String unfinishedReminderMessage(String text) {
-        return "Уже есть напоминание\n \""
-                + text
-                + "\", \nкоторому вы не указали время";
-    }
-
     public String newScheduleMessage() {
         return "Выбери день недели, на который хочешь составить расписание";
     }
@@ -71,7 +83,7 @@ public class MessageGenerator {
 
         if(reminderList.isEmpty()) {
             return "Еще нет ни одного напоминания для тебя\n"
-                    + "Чтобы добавить, используй /addreminder";
+                    + "Чтобы добавить, используй /add";
         }
 
         StringBuilder message = new StringBuilder(text);
@@ -101,9 +113,5 @@ public class MessageGenerator {
 
     public String pastTimeError() {
         return "Нельзя назначить напоминание на время, которое уже прошло, попробуй еще раз";
-    }
-
-    public String nullReminderMessage() {
-        return "Данное напоминание уже сработало";
     }
 }

@@ -42,15 +42,15 @@ public class BotStateHandler {
     public BotApiMethod<?> handleBotState(Long chatId, String messageText, BotState botState) {
 
         return switch (botState) {
-            case SET_TEXT_REMINDER -> setTextReminder(chatId, messageText);
+            case SET_REMINDER_TEXT -> setReminderText(chatId, messageText);
 
-            case SET_TIME_REMINDER ->  setTimeReminder(chatId, messageText);
+            case SET_REMINDER_TIME ->  setReminderTime(chatId, messageText);
 
             case EDIT_REMINDER -> editReminder(chatId, messageText);
 
-            case EDIT_TIME_REMINDER -> editTimeReminder(chatId, messageText);
+            case EDIT_REMINDER_TIME -> editReminderTime(chatId, messageText);
 
-            case EDIT_TEXT_REMINDER -> editTextReminder(chatId, messageText);
+            case EDIT_REMINDER_TEXT -> editReminderText(chatId, messageText);
 
             case DELETE_REMINDER -> deleteReminder(chatId, messageText);
 
@@ -60,14 +60,14 @@ public class BotStateHandler {
         };
     }
 
-    private BotApiMethod<?> setTextReminder(Long chatId, String reminderText) {
+    private BotApiMethod<?> setReminderText(Long chatId, String reminderText) {
 
-        chatService.setBotState(chatId, BotState.SET_TIME_REMINDER);
+        chatService.setBotState(chatId, BotState.SET_REMINDER_TIME);
         reminderService.addReminder(chatService.getChat(chatId), reminderText);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTimeMessage());
     }
 
-    private BotApiMethod<?> setTimeReminder(Long chatId, String timeString) {
+    private BotApiMethod<?> setReminderTime(Long chatId, String timeString) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
 
         if (reminder.isPresent()) {
@@ -93,7 +93,7 @@ public class BotStateHandler {
         return null;
     }
 
-    private BotApiMethod<?> editTimeReminder(Long chatId, String timeString) {
+    private BotApiMethod<?> editReminderTime(Long chatId, String timeString) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
 
         if (reminder.isPresent()) {
@@ -113,7 +113,7 @@ public class BotStateHandler {
         return null;
     }
 
-    private BotApiMethod<?> editTextReminder(Long chatId, String text) {
+    private BotApiMethod<?> editReminderText(Long chatId, String text) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
 
         if (reminder.isPresent()) {

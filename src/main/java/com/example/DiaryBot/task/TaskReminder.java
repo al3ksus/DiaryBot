@@ -57,8 +57,8 @@ public class TaskReminder extends TimerTask {
 
            if (reminder.get().getReminderState().equals(ReminderState.EDITING)){
                if ((botState.equals(BotState.EDIT_REMINDER) ||
-                       botState.equals(BotState.EDIT_TEXT_REMINDER) ||
-                       botState.equals(BotState.EDIT_TIME_REMINDER))
+                       botState.equals(BotState.EDIT_REMINDER_TIME) ||
+                       botState.equals(BotState.EDIT_REMINDER_TEXT))
                ) {
                    timer.cancel();
                    return;

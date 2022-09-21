@@ -26,11 +26,6 @@ public class ReminderService {
         return reminderRepository.findById(id);
     }
 
-
-    public void addReminder(Reminder reminder) {
-        reminderRepository.save(reminder);
-    }
-
     public Optional<Reminder> findByState(Chat chat, ReminderState reminderState) {
         return reminderRepository.findByChatAndReminderState(chat, reminderState);
     }
@@ -60,14 +55,6 @@ public class ReminderService {
 
     public List<Reminder> findAll(Chat chat) {
         return reminderRepository.findAllByChat(chat);
-    }
-
-    public boolean isExist(Reminder reminder) {
-        return reminderRepository.existsById(reminder.getId());
-    }
-
-    public boolean isExistByState(ReminderState reminderState) {
-        return reminderRepository.existsByReminderState(reminderState);
     }
 
 }

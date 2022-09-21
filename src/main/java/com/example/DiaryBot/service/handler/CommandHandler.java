@@ -40,13 +40,13 @@ public class CommandHandler {
 
             case "HELP" -> help(chatId);
 
-            case "ADDREMINDER" -> addReminder(chatId);
+            case "ADD" -> addReminder(chatId);
 
-            case "EDITREMINDER" -> editReminder(chatId);
+            case "EDIT" -> editReminder(chatId);
 
-            case "GETREMINDERLIST" -> getReminderList(chatId);
+            case "GETLIST" -> getReminderList(chatId);
 
-            case "DELETEREMINDER" -> deleteReminder(chatId);
+            case "DELETE" -> deleteReminder(chatId);
 
             case "SCHEDULE" -> schedule(chatId);
 
@@ -66,7 +66,7 @@ public class CommandHandler {
 
     private BotApiMethod<?> addReminder(Long chatId) {
         Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.CREATING);
-        chatService.setBotState(chatId, BotState.SET_TEXT_REMINDER);
+        chatService.setBotState(chatId, BotState.SET_REMINDER_TEXT);
         reminder.ifPresent(reminderService::delete);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextMessage());
     }

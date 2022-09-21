@@ -15,6 +15,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     Optional<Schedule> findByChatAndScheduleState(Chat chat, ScheduleState scheduleState);
 
     Optional<Schedule> findByChatAndDayOfWeek(Chat chat, DayOfWeek dayOfWeek);
-
-    List<Schedule> findAllByChatAndScheduleState(Chat chat, ScheduleState scheduleState);
 }
