@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Scanner;
 
 @Component
 @AllArgsConstructor
@@ -19,6 +20,10 @@ public class MessageGenerator {
 
     public String startMessage() {
         return "Привет!";
+    }
+
+    public String help() {
+        return "А МОЖЕТ ТЫ ЧОРТ";
     }
 
     public String setTextMessage() {

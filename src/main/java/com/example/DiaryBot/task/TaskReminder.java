@@ -74,7 +74,7 @@ public class TaskReminder extends TimerTask {
                        String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
                                botConfig.getBotToken(),
                                chatId,
-                               "Напоминаю\n" + reminder.get().getText().replaceAll("\n", "%0a"))
+                               "Напоминаю%0a" + reminder.get().getText().replaceAll("\n", "%0a"))
                        ).openConnection();
 
                connection.setRequestMethod("GET");

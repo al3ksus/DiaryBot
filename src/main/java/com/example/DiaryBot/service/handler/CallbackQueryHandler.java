@@ -69,13 +69,15 @@ public class CallbackQueryHandler {
     }
 
     private BotApiMethod<?> schedule(Long chatId, DayOfWeek dayOfWeek) {
-        Optional<Schedule> schedule = scheduleService.findByDay(chatService.getChat(chatId), dayOfWeek);
+        Optional<Schedule> scheduleByState = scheduleService.findByState(chatService.getChat(chatId), ScheduleState.EDITING);
+        Optional<Schedule> scheduleByDay = scheduleService.findByDay(chatService.getChat(chatId), dayOfWeek);
 
-        if (schedule.isEmpty()) {
+        if (scheduleByDay.isEmpty()) {
             scheduleService.addSchedule(chatService.getChat(chatId), dayOfWeek);
         }
 
-        schedule.ifPresent(s -> scheduleService.setState(s, ScheduleState.EDITING));
+        scheduleByState.ifPresent(s -> scheduleService.setState(s, ScheduleState.DEFAULT));
+        scheduleByDay.ifPresent(s -> scheduleService.setState(s, ScheduleState.EDITING));
         chatService.setBotState(chatId, BotState.SCHEDULE);
         return new SendMessage(String.valueOf(chatId), messageGenerator.setTextScheduleMessage(dayOfWeek));
     }

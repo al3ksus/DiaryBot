@@ -5,12 +5,14 @@ import com.example.DiaryBot.service.handler.BotStateHandler;
 import com.example.DiaryBot.service.handler.CallbackQueryHandler;
 import com.example.DiaryBot.service.handler.CommandHandler;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Service
+@AllArgsConstructor
 public class BotService {
 
     private final CommandHandler commandHandler;
@@ -22,14 +24,6 @@ public class BotService {
     private final MessageGenerator messageGenerator;
 
     private final CallbackQueryHandler callbackQueryHandler;
-
-    public BotService(CommandHandler commandHandler, BotStateHandler botStateHandler, ChatService chatService, MessageGenerator messageGenerator, CallbackQueryHandler callbackQueryHandler) {
-        this.commandHandler = commandHandler;
-        this.botStateHandler = botStateHandler;
-        this.chatService = chatService;
-        this.messageGenerator = messageGenerator;
-        this.callbackQueryHandler = callbackQueryHandler;
-    }
 
     public BotApiMethod<?> handleUpdate(Update update) {
         Long chatId = 0L;

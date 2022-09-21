@@ -38,6 +38,8 @@ public class CommandHandler {
         return switch (command) {
             case "START" -> start(chatId);
 
+            case "HELP" -> help(chatId);
+
             case "ADDREMINDER" -> addReminder(chatId);
 
             case "EDITREMINDER" -> editReminder(chatId);
@@ -56,6 +58,10 @@ public class CommandHandler {
     private BotApiMethod<?> start(Long chatId) {
         chatService.setBotState(chatId, BotState.DEFAULT);
         return new SendMessage(String.valueOf(chatId), messageGenerator.startMessage());
+    }
+
+    private BotApiMethod<?> help(Long chatId) {
+        return new SendMessage(String.valueOf(chatId), messageGenerator.help());
     }
 
     private BotApiMethod<?> addReminder(Long chatId) {
@@ -90,6 +96,8 @@ public class CommandHandler {
     private BotApiMethod<?> schedule(Long chatId) {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatId), messageGenerator.newScheduleMessage());
         sendMessage.setReplyMarkup(keyboardService.weekButtonRow());
+        Optional<Schedule> schedule = scheduleService.findByState(chatService.getChat(chatId), ScheduleState.EDITING);
+        schedule.ifPresent(s -> scheduleService.setState(s, ScheduleState.DEFAULT));
         chatService.setBotState(chatId, BotState.SCHEDULE);
         return sendMessage;
     }
