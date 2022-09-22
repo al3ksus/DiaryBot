@@ -14,14 +14,18 @@ public class TimeParser {
 
     public long getDelay(String timeString) throws ParseException {
         long delay;
-        Date date;
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+        //Date date;
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = new GregorianCalendar();
+        //SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+        TimeFormat timeFormat = new TimeFormat();
+        calendar2 = timeFormat.parseFromString(timeString);
 
-        date = formatter.parse(timeString);
-        calendar.setTimeInMillis(date.getTime());
-        System.out.println(calendar.getTime());
-        delay = date.getTime() - calendar.getTimeInMillis();
+        //date = formatter.parse(timeString);
+        //calendar.setTimeInMillis(date.getTime());
+        //System.out.println(calendar.getTime());
+        delay = calendar2.getTimeInMillis() - calendar1.getTimeInMillis();
+        System.out.println(delay);
 
         return delay;
     }
