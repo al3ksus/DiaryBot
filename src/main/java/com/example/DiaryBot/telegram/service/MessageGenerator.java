@@ -7,8 +7,8 @@ import com.example.DiaryBot.service.ReminderService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.List;
-import java.util.Scanner;
 
 @Component
 @AllArgsConstructor
@@ -40,6 +40,12 @@ public class MessageGenerator {
                 /delete    удалить напоминание
                 /schedule    составить расписание
                 
+                Обратите внимание на формат ввода времени при добавлении
+                напоминания, он должен быть таким:
+                часы:минуты ден.месяц.год. Время и дата разделены
+                проблелом, часы и минуты двоеточием,
+                а день, месяц и год точкой, при это год состоит из 4 цифр.
+                
                 для вопросов и предложений пишите на почту
                 aleksejukrainskij7554@gmail.com""";
     }
@@ -50,8 +56,15 @@ public class MessageGenerator {
     }
 
     public String setTimeMessage() {
+        Calendar calendar = Calendar.getInstance();
+        String time = calendar.get(Calendar.HOUR_OF_DAY)
+                + ":" + calendar.get(Calendar.MINUTE)
+                + " " + calendar.get(Calendar.DAY_OF_MONTH)
+                + "." + (calendar.get(Calendar.MONTH) + 1)
+                + "." + calendar.get(Calendar.YEAR);
+
         return "Введи время напоминания\n"
-                + "Пример ввода: 12:00 10.10.2022";
+                + "Пример ввода: " + time;
     }
 
     public String reminderSavedMessage(Reminder reminder) {

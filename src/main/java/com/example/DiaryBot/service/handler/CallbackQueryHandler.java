@@ -3,14 +3,11 @@ package com.example.DiaryBot.service.handler;
 
 import com.example.DiaryBot.model.Schedule;
 import com.example.DiaryBot.model.enums.BotState;
-import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.DayOfWeek;
-import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.ScheduleService;
-import com.example.DiaryBot.service.time.TimeParser;
 import com.example.DiaryBot.telegram.service.MessageGenerator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,8 +19,6 @@ import java.util.Optional;
 @Component
 @AllArgsConstructor
 public class CallbackQueryHandler {
-
-    private final ReminderService reminderService;
 
     private final ChatService chatService;
 

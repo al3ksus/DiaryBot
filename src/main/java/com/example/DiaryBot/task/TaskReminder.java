@@ -41,7 +41,6 @@ public class TaskReminder extends TimerTask {
 
     @Override
     public void run() {
-
         Optional<Reminder> reminder = reminderService.getReminder(reminderId);
         BotState botState = chatService.getChat(chatId).getBotState();
 
@@ -49,9 +48,11 @@ public class TaskReminder extends TimerTask {
 
            try {
                if (!timeParser.isPast(reminder.get().getTime())) {
+                   System.out.println("future");
                    return;
                }
            } catch (ParseException e) {
+               System.out.println("illegal time");
                throw new RuntimeException(e);
            }
 
@@ -60,6 +61,7 @@ public class TaskReminder extends TimerTask {
                        botState.equals(BotState.EDIT_REMINDER_TIME) ||
                        botState.equals(BotState.EDIT_REMINDER_TEXT))
                ) {
+                   System.out.println("editing");
                    timer.cancel();
                    return;
                }

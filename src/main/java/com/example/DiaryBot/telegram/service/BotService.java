@@ -6,12 +6,12 @@ import com.example.DiaryBot.service.handler.CallbackQueryHandler;
 import com.example.DiaryBot.service.handler.CommandHandler;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Service
+@Component
 @AllArgsConstructor
 public class BotService {
 

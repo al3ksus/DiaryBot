@@ -118,7 +118,7 @@ public class BotStateHandler {
 
         if (reminder.isPresent()) {
             reminderService.setText(reminder.get(), text);
-            chatService.setBotState(chatId, BotState.EDIT_REMINDER);
+            System.out.println(true);
             return saveChanges(chatId);
         }
 
@@ -130,17 +130,19 @@ public class BotStateHandler {
 
         if (reminder.isPresent()) {
 
-            Timer timer = new Timer();
-            TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService, chatService, timeParser);
+            if (reminder.get().getTime() != null){
+                Timer timer = new Timer();
+                TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService, chatService, timeParser);
 
-            try {
-                task.getTimer().schedule(task, timeParser.getDelay(reminder.get().getTime()));
-            }
-            catch (ParseException e) {
-                return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
-            }
-            catch (IllegalArgumentException e) {
-                task.getTimer().schedule(task, 1000);
+                try {
+                    task.getTimer().schedule(task, timeParser.getDelay(reminder.get().getTime()));
+                }
+                catch (ParseException e) {
+                    return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
+                }
+                catch (IllegalArgumentException e) {
+                    task.getTimer().schedule(task, 1000);
+                }
             }
 
             chatService.setBotState(chatId, BotState.DEFAULT);

@@ -1,13 +1,13 @@
 package com.example.DiaryBot.service.keyboard;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 public class KeyboardService {
 
     public InlineKeyboardMarkup editReminderButtonRow() {

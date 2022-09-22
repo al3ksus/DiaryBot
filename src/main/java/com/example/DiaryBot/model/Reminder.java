@@ -1,6 +1,5 @@
 package com.example.DiaryBot.model;
 
-import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.enums.ReminderState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Timer;
 
 @Entity
 @AllArgsConstructor

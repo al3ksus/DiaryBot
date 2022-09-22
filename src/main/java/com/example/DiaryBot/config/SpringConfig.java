@@ -1,8 +1,6 @@
 package com.example.DiaryBot.config;
 
 import com.example.DiaryBot.telegram.TelegramBot;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook;

@@ -19,13 +19,33 @@ public class TimeFormat {
 
         hour = getHour(time);
         time = time.substring(time.indexOf(':') + 1);
+
         minute = getMinute(time);
         time = time.substring(time.indexOf(' ') + 1);
+
         day = getDay(time);
         time = time.substring(time.indexOf('.') + 1);
+
         month = getMonth(time);
         time = time.substring(time.indexOf('.') + 1);
+
         year = getYear(time);
+
+        if (month == 4 || month == 6 || month == 9 || month == 11) {
+            if (day > 30) {
+                throw new ParseException("Illegal time format", 21);
+            }
+        } else if (month == 2) {
+            if (year % 4 == 0) {
+                if (day > 29) {
+                    throw new ParseException("Illegal time format", 21);
+                }
+            } else {
+                if (day > 28) {
+                    throw new ParseException("Illegal time format", 21);
+                }
+            }
+        }
 
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month - 1);
@@ -34,16 +54,12 @@ public class TimeFormat {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
 
-        System.out.println(calendar.getTime());
-
         return calendar;
     }
 
     private int getHour(String time) throws ParseException {
         int hour = -1;
 
-        int int0;
-        int int1;
         char char0;
         char char1;
 
@@ -55,21 +71,19 @@ public class TimeFormat {
         }
 
         if (Character.isDigit(char0)) {
-            int0 = Character.getNumericValue(char0);
 
             if (Character.isDigit(char1) && time.charAt(2) == ':') {
-                int1 = Character.getNumericValue(char1);
+                hour = Character.getNumericValue(char0) * 10 + Character.getNumericValue(char1);
 
-                if (int0 <= 1 || (int0 == 2 && int1 <= 3)) {
-
-                    hour = int0 * 10 + int1;
-                }
             } else if (char1 == ':') {
-                hour = int0;
+                hour = Character.getNumericValue(char0);
             }
         }
 
-        System.out.println(hour);
+        if (hour > 23) {
+            throw new ParseException("Illegal time format", 20);
+        }
+
         if (hour == -1) {
             throw new ParseException("Illegal time format", 20);
         } else {
@@ -80,8 +94,6 @@ public class TimeFormat {
     private int getMinute(String time) throws ParseException {
         int minute = -1;
 
-        int int0;
-        int int1;
         char char0;
         char char1;
 
@@ -93,17 +105,19 @@ public class TimeFormat {
         }
 
         if (Character.isDigit(char0)) {
-            int0 = Character.getNumericValue(char0);
+
             if (Character.isDigit(char1) && time.charAt(2) == ' ') {
-                int1 = Character.getNumericValue(char1);
-                if (int0 <= 5) {
-                    minute = int0 * 10 + int1;
-                }
+                minute = Character.getNumericValue(char0) * 10 + Character.getNumericValue(char1);
+
             } else if (char1 == ' ') {
-                minute = int0;
+                minute = Character.getNumericValue(char0);
             }
         }
-        System.out.println(minute);
+
+        if (minute > 59) {
+            throw new ParseException("Illegal time format", 20);
+        }
+
         if (minute == -1) {
             throw new ParseException("Illegal time format", 21);
         } else {
@@ -112,12 +126,8 @@ public class TimeFormat {
     }
 
     private int getDay(String time) throws ParseException {
-        Calendar calendar = Calendar.getInstance();
-
-        int month = calendar.get(Calendar.MONTH);
         int day = -1;
-        int int0;
-        int int1;
+
         char char0;
         char char1;
 
@@ -129,36 +139,17 @@ public class TimeFormat {
         }
 
         if (Character.isDigit(char0)) {
-            int0 = Character.getNumericValue(char0);
+
             if (Character.isDigit(char1) && time.charAt(2) == '.') {
-                int1 = Character.getNumericValue(char1);
-                if (int0 <= 2 || (int0 == 3 && int1 <= 1)) {
-                    day = int0 * 10 + int1;
-                }
+                day = Character.getNumericValue(char0) * 10 + Character.getNumericValue(char1);
+
             } else if (char1 == '.') {
-                day = int0;
+                day = Character.getNumericValue(char0);
             }
         }
 
-        System.out.println(day);
-        if (month == 3 || month == 5 || month == 8 || month == 10) {
-            if (day > 30) {
-                throw new ParseException("Illegal time format", 21);
-            }
-        } else if (month == 1) {
-            if (calendar.get(Calendar.YEAR) % 4 == 0) {
-                if (day > 29) {
-                    throw new ParseException("Illegal time format", 21);
-                }
-            } else {
-                if (day > 28) {
-                    throw new ParseException("Illegal time format", 21);
-                }
-            }
-        } else {
-            if (day > 30) {
-                throw new ParseException("Illegal time format", 21);
-            }
+        if (day > 31 || day == 0) {
+            throw new ParseException("Illegal time format", 20);
         }
 
         if (day == -1) {
@@ -171,8 +162,6 @@ public class TimeFormat {
     private int getMonth(String time) throws ParseException {
         int month = -1;
 
-        int int0;
-        int int1;
         char char0;
         char char1;
 
@@ -184,18 +173,19 @@ public class TimeFormat {
         }
 
         if (Character.isDigit(char0)) {
-            int0 = Character.getNumericValue(char0);
+
             if (Character.isDigit(char1) && time.charAt(2) == '.') {
-                int1 = Character.getNumericValue(char1);
-                if (int0 == 0 || (int0 == 1 && int1 <= 2)) {
-                    month = int0 * 10 + int1;
-                }
+                month = Character.getNumericValue(char0) * 10 + Character.getNumericValue(char1);
+
             } else if (char1 == '.') {
-                month = int0;
+                month = Character.getNumericValue(char0);
             }
         }
 
-        System.out.println(month);
+        if (month > 12 || month == 0) {
+            throw new ParseException("Illegal time format", 20);
+        }
+
         if (month == -1) {
             throw new ParseException("Illegal time format", 21);
         } else {
@@ -231,7 +221,6 @@ public class TimeFormat {
                     + Character.getNumericValue(char3);
         }
 
-        System.out.println(year);
         if (year == -1) {
             throw new ParseException("Illegal time format", 21);
         } else {

@@ -16,8 +16,11 @@ import java.util.Calendar;
 @RestController
 public class WebhookController {
 
-    @Autowired
-    private TelegramBot telegramBot;
+    private final TelegramBot telegramBot;
+
+    public WebhookController(TelegramBot telegramBot) {
+        this.telegramBot = telegramBot;
+    }
 
     @PostMapping("/")
     public BotApiMethod<?> onUpdateReceived(@RequestBody Update update) {
