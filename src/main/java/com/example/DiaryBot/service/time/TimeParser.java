@@ -1,5 +1,6 @@
 package com.example.DiaryBot.service.time;
 
+import com.example.DiaryBot.utils.Constant;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -28,20 +29,22 @@ public class TimeParser {
         int currentDayOfWeekNumber = calendar1.get(Calendar.DAY_OF_WEEK) - 1;
 
         if (dayOfWeekNumber < currentDayOfWeekNumber) {
-            delay = (7 - (currentDayOfWeekNumber - dayOfWeekNumber)) * 86_400_000L;
+            delay = (7 - (currentDayOfWeekNumber - dayOfWeekNumber)) * Constant.DAY;
         }
         else if (dayOfWeekNumber > currentDayOfWeekNumber) {
-            delay = (dayOfWeekNumber - currentDayOfWeekNumber) * 86_400_000L;
+            delay = (dayOfWeekNumber - currentDayOfWeekNumber) * Constant.DAY;
         }
         else {
-            delay = calendar1.get(Calendar.HOUR_OF_DAY) < 21? 0: 7 * 86_400_000L;
+            delay = calendar1.get(Calendar.HOUR_OF_DAY) < 21? 0: Constant.WEEK;
         }
 
-        calendar2.setTimeInMillis(calendar1.getTimeInMillis() + delay);
+        calendar2.setTimeInMillis(calendar1.getTimeInMillis() + delay - Constant.DAY);
         calendar2.set(Calendar.HOUR_OF_DAY, 21);
         calendar2.set(Calendar.MINUTE, 0);
         calendar2.set(Calendar.SECOND, 0);
         delay = calendar2.getTimeInMillis() - calendar1.getTimeInMillis();
+        System.out.println(calendar2.getTime());
+        System.out.println(delay/1000);
         return delay;
     }
 

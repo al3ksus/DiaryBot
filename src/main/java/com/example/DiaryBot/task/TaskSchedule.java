@@ -6,6 +6,7 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.enums.ScheduleState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ScheduleService;
+import com.example.DiaryBot.utils.Constant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -56,10 +57,10 @@ public class TaskSchedule extends TimerTask {
 
             try {
                 connection = (HttpURLConnection) new URL(
-                        String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
+                        String.format(Constant.SEND_MESSAGE_URL,
                                 botConfig.getBotToken(),
                                 chatId,
-                                "Твое расписание на завтра\n" + schedule.get().getText().replaceAll("\n", "%0a"))
+                                "Твое расписание на завтра%0a" + schedule.get().getText().replaceAll("\n", "%0a"))
                 ).openConnection();
 
                 connection.setRequestMethod("GET");

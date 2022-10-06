@@ -5,16 +5,18 @@ services:
   postgres:
     image: postgres
     ports:
-      - "5000:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=7554
       - POSTGRES_DB=diary_bot
 
-  spring-boot-app:
-    image: diary-bot
-    ports:
-      - "8000:8000"
-    network_mode: host
+  #spring-boot-app:
+    #image: registry.gitlab.com/al3ksus/diarybot
+    #ports:
+    #  - "8080:8080"
+    #environment:
+    #  - TZ=Europe/Moscow
+    #network_mode: host
 
-networks:
-  localhost:
+#networks:
+#  localhost:

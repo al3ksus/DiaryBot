@@ -7,6 +7,7 @@ import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.service.ChatService;
 import com.example.DiaryBot.service.ReminderService;
 import com.example.DiaryBot.service.time.TimeParser;
+import com.example.DiaryBot.utils.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,11 +49,9 @@ public class TaskReminder extends TimerTask {
 
            try {
                if (!timeParser.isPast(reminder.get().getTime())) {
-                   System.out.println("future");
                    return;
                }
            } catch (ParseException e) {
-               System.out.println("illegal time");
                throw new RuntimeException(e);
            }
 
@@ -61,7 +60,6 @@ public class TaskReminder extends TimerTask {
                        botState.equals(BotState.EDIT_REMINDER_TIME) ||
                        botState.equals(BotState.EDIT_REMINDER_TEXT))
                ) {
-                   System.out.println("editing");
                    timer.cancel();
                    return;
                }
@@ -73,7 +71,7 @@ public class TaskReminder extends TimerTask {
 
            try {
                connection = (HttpURLConnection) new URL(
-                       String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s",
+                       String.format(Constant.SEND_MESSAGE_URL,
                                botConfig.getBotToken(),
                                chatId,
                                "Напоминаю%0a" + reminder.get().getText().replaceAll("\n", "%0a"))
