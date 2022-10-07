@@ -45,8 +45,7 @@ public class TimeParser {
         calendar2.set(Calendar.MINUTE, 0);
         calendar2.set(Calendar.SECOND, 0);
         delay = calendar2.getTimeInMillis() - calendar1.getTimeInMillis();
-        System.out.println(calendar2.getTime());
-        System.out.println(delay/1000);
+
         return delay;
     }
 
