@@ -66,7 +66,7 @@ public class TaskSchedule extends TimerTask {
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                timer.cancel();
+//                timer.cancel();
 
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     return;

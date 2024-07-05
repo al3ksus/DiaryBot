@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class BotConfig {
-    private final String webhookPath = "https://95.214.62.104";
+    private final String webhookPath = " https://729f-85-113-134-231.ngrok-free.app";
 
     private final String botName = "Dailu_Helper_Bot";
 

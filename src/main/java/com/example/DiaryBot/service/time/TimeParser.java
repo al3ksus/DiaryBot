@@ -58,7 +58,7 @@ public class TimeParser {
         return calendar2.getTimeInMillis() <= calendar1.getTimeInMillis();
     }
 
-    private  static Calendar parse(String timeString) throws ParseException {
+    private  Calendar parse(String timeString) throws ParseException {
         int hour;
         int minute;
         int day;
