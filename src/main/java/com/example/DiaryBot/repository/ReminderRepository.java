@@ -17,5 +17,6 @@ public interface ReminderRepository extends JpaRepository<Reminder, Long> {
     List<Reminder> findAllByChat(Chat chat);
 
     List<Reminder> findAllByChatAndReminderState(Chat chat, ReminderState reminderState);
+    void deleteByReminderState(ReminderState reminderState);
 
 }

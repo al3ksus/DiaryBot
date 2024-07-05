@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ReminderService {
     void addReminder(Chat chat, String text);
+    void addReminder(Reminder reminder);
     Optional<Reminder> getReminder(Long id);
     Optional<Reminder> findByState(Chat chat, ReminderState reminderState);
     List<Reminder> findAllByState(Chat chat, ReminderState reminderState);
@@ -16,5 +17,6 @@ public interface ReminderService {
     void setTime(Reminder reminder, String time);
     void setText(Reminder reminder, String text);
     void delete(Reminder reminder);
+    void delete(ReminderState reminderState);
     List<Reminder> findAll(Chat chat);
 }

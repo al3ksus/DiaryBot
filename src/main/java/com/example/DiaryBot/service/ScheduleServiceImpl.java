@@ -24,6 +24,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public void addSchedule(Schedule schedule) {
+        scheduleRepository.save(schedule);
+    }
+
+    @Override
     public Optional<Schedule> getSchedule(Long id) {
         return scheduleRepository.findById(id);
     }
@@ -48,5 +53,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void setState(Schedule schedule, ScheduleState scheduleState) {
         schedule.setScheduleState(scheduleState);
         scheduleRepository.save(schedule);
+    }
+
+    @Override
+    public void delete(Schedule schedule) {
+        scheduleRepository.delete(schedule);
     }
 }

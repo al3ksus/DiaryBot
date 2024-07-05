@@ -5,6 +5,7 @@ import com.example.DiaryBot.model.Reminder;
 import com.example.DiaryBot.model.enums.ReminderState;
 import com.example.DiaryBot.repository.ReminderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,11 @@ public class ReminderServiceImpl implements ReminderService{
     @Override
     public void addReminder(Chat chat, String text) {
         reminderRepository.save(new Reminder(chat, text));
+    }
+
+    @Override
+    public void addReminder(Reminder reminder) {
+        reminderRepository.save(reminder);
     }
 
     @Override
@@ -59,6 +65,12 @@ public class ReminderServiceImpl implements ReminderService{
     @Override
     public void delete(Reminder reminder) {
         reminderRepository.delete(reminder);
+    }
+
+    @Override
+    @Transactional
+    public void delete(ReminderState reminderState) {
+        reminderRepository.deleteByReminderState(reminderState);
     }
 
     @Override

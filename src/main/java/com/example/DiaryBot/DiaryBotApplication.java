@@ -10,6 +10,4 @@ public class DiaryBotApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DiaryBotApplication.class, args);
 	}
-
-
 }

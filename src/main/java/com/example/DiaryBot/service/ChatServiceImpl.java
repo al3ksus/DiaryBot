@@ -4,9 +4,10 @@ import com.example.DiaryBot.model.enums.BotState;
 import com.example.DiaryBot.model.Chat;
 import com.example.DiaryBot.repository.ChatRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
 
@@ -17,6 +18,11 @@ public class ChatServiceImpl implements ChatService{
     @Override
     public void addChat(Long chatId) {
         chatRepository.save(new Chat(chatId, BotState.DEFAULT));
+    }
+
+    @Override
+    public void addChat(Chat chat) {
+        chatRepository.save(chat);
     }
 
     @Override
@@ -34,5 +40,11 @@ public class ChatServiceImpl implements ChatService{
     @Override
     public boolean isExist(Long chatId) {
         return chatRepository.existsByChatId(chatId);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long chatId) {
+        chatRepository.deleteByChatId(chatId);
     }
 }

@@ -108,7 +108,8 @@ public class BotStateHandlerImpl implements BotStateHandler {
             }
 
             reminderService.setTime(reminder.get(), timeString);
-            return saveChanges(chatId);
+            reminder.get().setTime(timeString);
+            return saveChanges(chatId, reminder.get());
         }
 
         return null;
@@ -119,39 +120,31 @@ public class BotStateHandlerImpl implements BotStateHandler {
 
         if (reminder.isPresent()) {
             reminderService.setText(reminder.get(), text);
-            System.out.println(true);
-            return saveChanges(chatId);
+            reminder.get().setText(text);
+            return saveChanges(chatId, reminder.get());
         }
 
         return null;
     }
 
-    private BotApiMethod<?> saveChanges(Long chatId) {
-        Optional<Reminder> reminder = reminderService.findByState(chatService.getChat(chatId), ReminderState.EDITING);
-
-        if (reminder.isPresent()) {
-
-            if (reminder.get().getTime() != null){
-                Timer timer = new Timer();
-                TaskReminder task = new TaskReminder(reminder.get().getId(), chatId, timer, reminderService, chatService, timeParser);
-
-                try {
-                    task.getTimer().schedule(task, timeParser.getDelay(reminder.get().getTime()));
-                }
-                catch (ParseException e) {
-                    return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
-                }
-                catch (IllegalArgumentException e) {
-                    task.getTimer().schedule(task, 1000);
-                }
+    private BotApiMethod<?> saveChanges(Long chatId, Reminder reminder) {
+        if (reminder.getTime() != null){
+            Timer timer = new Timer();
+            TaskReminder task = new TaskReminder(reminder.getId(), chatId, timer, reminderService, chatService, timeParser);
+            try {
+                task.getTimer().schedule(task, timeParser.getDelay(reminder.getTime()));
             }
-
-            chatService.setBotState(chatId, BotState.DEFAULT);
-            reminderService.setReminderState(reminder.get(), ReminderState.DEFAULT);
-            return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder.get()));
+            catch (ParseException e) {
+                return new SendMessage(String.valueOf(chatId), messageGenerator.invalidTimeError());
+            }
+            catch (IllegalArgumentException e) {
+                task.getTimer().schedule(task, 1000);
+            }
         }
 
-        return null;
+        chatService.setBotState(chatId, BotState.DEFAULT);
+        reminderService.setReminderState(reminder, ReminderState.DEFAULT);
+        return new SendMessage(String.valueOf(chatId), messageGenerator.reminderSavedMessage(reminder));
     }
 
     private BotApiMethod<?> editReminder(Long chatId, String number) {
